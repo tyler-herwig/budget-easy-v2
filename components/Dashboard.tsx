@@ -148,8 +148,8 @@ const Dashboard: React.FC = () => {
                                 fixedDecimalScale={true}
                               />
                             </TableCell>
-                            <TableCell>{expense.date_due}</TableCell>
-                            <TableCell>{expense.date_paid || 'Not Paid'}</TableCell>
+                            <TableCell>{moment(expense.date_due).format('MMMM Do, YYYY')}</TableCell>
+                            <TableCell>{expense.date_paid ? moment(expense.date_paid).format('MMMM Do, YYYY') : 'Not Paid'}</TableCell>
                             <TableCell>{expense.autopay ? 'Yes' : 'No'}</TableCell>
                           </TableRow>
                         ))}
