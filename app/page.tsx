@@ -1,0 +1,24 @@
+import Dashboard from '@/components/Dashboard'
+import Header from '@/components/Header'
+import { ProfileProvider } from '@/context/ProfileContext'
+import { createClient } from '@/utils/supabase/server'
+import { redirect } from 'next/navigation'
+
+export default async function Home() {
+  const supabase = await createClient()
+
+  const {
+    data: { user },
+  } = await supabase.auth.getUser()
+
+  if (!user) {
+      redirect('/login')
+  }
+
+  return (
+    <ProfileProvider user={user}>
+      <Header />
+      <Dashboard />
+    </ProfileProvider>
+  );
+}
