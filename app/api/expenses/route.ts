@@ -26,12 +26,14 @@ export async function GET(request: Request) {
     let query = supabase.from('expenses').select('*').eq('profile_id', user.id).order('date_due', { ascending: true })
 
     if (startDate) {
-      const parsedStartDate = parseISO(startDate)
+      // Parse and convert the start date to UTC
+      const parsedStartDate = parseISO(startDate).toISOString()
       query = query.gte('date_due', parsedStartDate) // Filter expenses where date_due is greater than or equal to start_date
     }
 
     if (endDate) {
-      const parsedEndDate = parseISO(endDate)
+      // Parse and convert the end date to UTC
+      const parsedEndDate = parseISO(endDate).toISOString()
       query = query.lte('date_due', parsedEndDate) // Filter expenses where date_due is less than or equal to end_date
     }
 
