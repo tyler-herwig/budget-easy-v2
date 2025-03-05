@@ -1,10 +1,11 @@
 'use client';
 
-import React, { useEffect, useState } from 'react';
+import React, { useMemo } from 'react';
 import { Grid, Container, Card, CardContent, Typography, Table, TableHead, TableBody, TableRow, TableCell } from '@mui/material';
 import { NumericFormat } from 'react-number-format';
 import { useQuery } from '@tanstack/react-query';
 import axios from 'axios';
+import moment from 'moment';
 
 interface IncomeData {
   incomeDate: string;
@@ -21,14 +22,30 @@ interface ExpenseData {
   autopay: boolean;
 }
 
-// Function to fetch expenses from the API
+// Fetch expenses from API
 const fetchExpenses = async (): Promise<ExpenseData[]> => {
   const { data } = await axios.get('/api/expenses');
   return data;
 };
 
+// Group expenses by month and year
+const groupByMonthYear = (expenses: ExpenseData[]) => {
+    return expenses.reduce((acc, expense) => {
+      // Parse the date using moment and format it as 'MMMM, YYYY'
+      const monthYearKey = moment(expense.date_due).format('MMMM, YYYY');
+  
+      // Group expenses by month and year
+      if (!acc[monthYearKey]) {
+        acc[monthYearKey] = [];
+      }
+  
+      acc[monthYearKey].push(expense);
+      return acc;
+    }, {} as Record<string, ExpenseData[]>);
+};
+
 const Dashboard: React.FC = () => {
-  // Hardcoded data for income
+  // Sample income data
   const incomeData: IncomeData[] = [
     {
       incomeDate: '2025-03-01',
@@ -44,16 +61,21 @@ const Dashboard: React.FC = () => {
     },
   ];
 
-  // Use React Query to fetch expenses data
+  // Fetch expenses using React Query
   const { data: expenses, isLoading, isError, error } = useQuery<ExpenseData[], Error>({
-    queryKey: ['expenses'],  // query key
-    queryFn: fetchExpenses,  // query function
+    queryKey: ['expenses'],
+    queryFn: fetchExpenses
   });
+
+  // Group expenses by month and year using useMemo to optimize performance
+  const groupedExpenses = useMemo(() => {
+    return expenses ? groupByMonthYear(expenses) : {};
+  }, [expenses]);
 
   return (
     <Container maxWidth="xl" sx={{ mt: 3, mb: 3 }}>
       <Grid container spacing={3}>
-        {/* Income Column */}
+        {/* Income Data Section */}
         <Grid item xs={12} md={5}>
           <Card>
             <CardContent>
@@ -84,7 +106,7 @@ const Dashboard: React.FC = () => {
           </Card>
         </Grid>
 
-        {/* Expenses Column */}
+        {/* Expenses Data Section */}
         <Grid item xs={12} md={7}>
           <Card>
             <CardContent>
@@ -96,37 +118,45 @@ const Dashboard: React.FC = () => {
               ) : isError ? (
                 <Typography color="error">{(error as Error).message || 'Failed to fetch expenses'}</Typography>
               ) : (
-                <Table>
-                  <TableHead>
-                    <TableRow>
-                      <TableCell>Expense</TableCell>
-                      <TableCell>Amount</TableCell>
-                      <TableCell>Date Due</TableCell>
-                      <TableCell>Date Paid</TableCell>
-                      <TableCell>Autopay</TableCell>
-                    </TableRow>
-                  </TableHead>
-                  <TableBody>
-                    {expenses?.map((expense, index) => (
-                      <TableRow key={index}>
-                        <TableCell>{expense.expense_name}</TableCell>
-                        <TableCell>
-                          <NumericFormat
-                            value={expense.amount || 0}
-                            displayType="text"
-                            thousandSeparator={true}
-                            prefix="$"
-                            decimalScale={2}
-                            fixedDecimalScale={true}
-                          />
-                        </TableCell>
-                        <TableCell>{expense.date_due}</TableCell>
-                        <TableCell>{expense.date_paid || 'Not Paid'}</TableCell>
-                        <TableCell>{expense.autopay ? 'Yes' : 'No'}</TableCell>
-                      </TableRow>
-                    ))}
-                  </TableBody>
-                </Table>
+                // Render grouped expenses
+                Object.keys(groupedExpenses).map((monthYear, index) => (
+                  <div key={index}>
+                    <Typography variant="h6" sx={{ mt: 3 }}>
+                      {monthYear}
+                    </Typography>
+                    <Table>
+                      <TableHead>
+                        <TableRow>
+                          <TableCell>Expense</TableCell>
+                          <TableCell>Amount</TableCell>
+                          <TableCell>Date Due</TableCell>
+                          <TableCell>Date Paid</TableCell>
+                          <TableCell>Autopay</TableCell>
+                        </TableRow>
+                      </TableHead>
+                      <TableBody>
+                        {groupedExpenses[monthYear].map((expense, expenseIndex) => (
+                          <TableRow key={expenseIndex}>
+                            <TableCell>{expense.expense_name}</TableCell>
+                            <TableCell>
+                              <NumericFormat
+                                value={expense.amount || 0}
+                                displayType="text"
+                                thousandSeparator={true}
+                                prefix="$"
+                                decimalScale={2}
+                                fixedDecimalScale={true}
+                              />
+                            </TableCell>
+                            <TableCell>{expense.date_due}</TableCell>
+                            <TableCell>{expense.date_paid || 'Not Paid'}</TableCell>
+                            <TableCell>{expense.autopay ? 'Yes' : 'No'}</TableCell>
+                          </TableRow>
+                        ))}
+                      </TableBody>
+                    </Table>
+                  </div>
+                ))
               )}
             </CardContent>
           </Card>

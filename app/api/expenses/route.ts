@@ -11,8 +11,6 @@ export async function GET(request: Request) {
       data: { user },
     } = await supabase.auth.getUser()
 
-    console.log(user);
-
     // If no user is authenticated, return an error
     if (!user) {
       return NextResponse.json({ error: 'User not authenticated' }, { status: 401 })
