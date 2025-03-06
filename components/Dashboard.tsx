@@ -201,7 +201,15 @@ const Dashboard: React.FC = () => {
                                             />
                                           </TableCell>
                                           <TableCell>{moment(expense.date_due).format('MMMM Do, YYYY')}</TableCell>
-                                          <TableCell>{expense.date_paid ? moment(expense.date_paid).format('MMMM Do, YYYY') : <Chip icon={<Error />} label="Not paid" color="error" variant="outlined" size="small" />}</TableCell>
+                                          <TableCell>
+                                            {expense.date_paid ? (
+                                              moment(expense.date_paid).format('MMMM Do, YYYY')
+                                            ) : expense.date_due && moment(expense.date_due).isBefore(moment(), 'day') ? (
+                                              <Chip icon={<Error />} label="Past due" color="error" variant="outlined" size="small" />
+                                            ) : (
+                                              <Chip icon={<Error />} label="Not paid" color="warning" variant="outlined" size="small" />
+                                            )}
+                                          </TableCell>
                                           <TableCell>{expense.autopay ? <Check color="success" /> : ''}</TableCell>
                                       </TableRow>
                                     ))}
