@@ -116,6 +116,9 @@ const Dashboard: React.FC = () => {
                   </Box>
                 </Grid>
                 <Grid item xs={12} md={5}>
+                    <Typography variant="h6" gutterBottom>
+                        Income
+                    </Typography>
                     <Box 
                       sx={{ 
                         position: 'sticky', 
@@ -229,87 +232,84 @@ const Dashboard: React.FC = () => {
                     </Box>
                 </Grid>
                 <Grid item xs={12} md={7}>
-                    <Card>
-                        <CardContent>
-                        <Typography variant="h6" gutterBottom>
-                            Expenses
-                        </Typography>
-                        {isErrorExpenses ? (
-                            <Typography color="error">{(expensesError as Error).message || 'Failed to fetch expenses'}</Typography>
-                        ) : (
-                            // Render grouped expenses
-                            Object.keys(groupedExpenses).map((monthYear, index) => (
-                            <div key={index}>
-                                <Typography variant="h6" sx={{ mt: 3 }} color="primary">
-                                  <CalendarMonth sx={{ pt: 1}} /> {monthYear}
-                                </Typography>
-                                <Table>
-                                  <TableHead>
-                                      <TableRow>
-                                      <TableCell>Expense</TableCell>
-                                      <TableCell>Amount</TableCell>
-                                      <TableCell>Date Due</TableCell>
-                                      <TableCell>Date Paid</TableCell>
-                                      <TableCell>Autopay</TableCell>
-                                      </TableRow>
-                                  </TableHead>
-                                  <TableBody>
-                                      {groupedExpenses[monthYear].map((expense, expenseIndex) => (
-                                        <TableRow key={expenseIndex}>
-                                            <TableCell 
-                                              sx={{
-                                                fontWeight: 'bold', 
-                                                whiteSpace: 'nowrap', 
-                                                overflow: 'hidden', 
-                                                textOverflow: 'ellipsis',
-                                              }}
-                                            >
-                                              {expense.expense_name}
-                                            </TableCell>
-                                            <TableCell>
-                                              <NumericFormat
-                                                  value={expense.amount || 0}
-                                                  displayType="text"
-                                                  thousandSeparator={true}
-                                                  prefix="$"
-                                                  decimalScale={2}
-                                                  fixedDecimalScale={true}
-                                              />
-                                            </TableCell>
-                                            <TableCell 
-                                              sx={{
-                                                whiteSpace: 'nowrap', 
-                                                overflow: 'hidden', 
-                                                textOverflow: 'ellipsis',
-                                              }}
-                                            >
-                                              {moment(expense.date_due).format('MMMM Do, YYYY')}
-                                            </TableCell>
-                                            <TableCell 
-                                              sx={{
-                                                whiteSpace: 'nowrap', 
-                                                overflow: 'hidden', 
-                                                textOverflow: 'ellipsis',
-                                              }}
-                                            >
-                                              {expense.date_paid ? (
-                                                moment(expense.date_paid).format('MMMM Do, YYYY')
-                                              ) : expense.date_due && moment(expense.date_due).isBefore(moment(), 'day') ? (
-                                                <Chip icon={<Error />} label="Past due" color="error" variant="outlined" size="small" />
-                                              ) : (
-                                                <Chip icon={<Error />} label="Not paid" color="warning" variant="outlined" size="small" />
-                                              )}
-                                            </TableCell>
-                                            <TableCell sx={{ textAlign: 'center' }}>{expense.autopay ? <Check color="success" /> : ''}</TableCell>
-                                        </TableRow>
-                                      ))}
-                                  </TableBody>
-                                </Table>
-                            </div>
-                            ))
-                        )}
-                        </CardContent>
-                    </Card>
+                      <Typography variant="h6" gutterBottom>
+                          Expenses
+                      </Typography>
+                      {isErrorExpenses ? (
+                          <Typography color="error">{(expensesError as Error).message || 'Failed to fetch expenses'}</Typography>
+                      ) : (
+                        Object.keys(groupedExpenses).map((monthYear, index) => (
+                          <Card key={index} sx={{ mb: 3 }}>
+                            <CardContent>
+                              <Typography variant="h6" color="primary">
+                                <CalendarMonth sx={{ pt: 1}} /> {monthYear}
+                              </Typography>
+                              <Table>
+                                <TableHead>
+                                  <TableRow>
+                                  <TableCell>Expense</TableCell>
+                                  <TableCell>Amount</TableCell>
+                                  <TableCell>Date Due</TableCell>
+                                  <TableCell>Date Paid</TableCell>
+                                  <TableCell>Autopay</TableCell>
+                                  </TableRow>
+                                </TableHead>
+                                <TableBody>
+                                  {groupedExpenses[monthYear].map((expense, expenseIndex) => (
+                                    <TableRow key={expenseIndex}>
+                                        <TableCell 
+                                          sx={{
+                                            fontWeight: 'bold', 
+                                            whiteSpace: 'nowrap', 
+                                            overflow: 'hidden', 
+                                            textOverflow: 'ellipsis',
+                                          }}
+                                        >
+                                          {expense.expense_name}
+                                        </TableCell>
+                                        <TableCell>
+                                          <NumericFormat
+                                              value={expense.amount || 0}
+                                              displayType="text"
+                                              thousandSeparator={true}
+                                              prefix="$"
+                                              decimalScale={2}
+                                              fixedDecimalScale={true}
+                                          />
+                                        </TableCell>
+                                        <TableCell 
+                                          sx={{
+                                            whiteSpace: 'nowrap', 
+                                            overflow: 'hidden', 
+                                            textOverflow: 'ellipsis',
+                                          }}
+                                        >
+                                          {moment(expense.date_due).format('MMMM Do, YYYY')}
+                                        </TableCell>
+                                        <TableCell 
+                                          sx={{
+                                            whiteSpace: 'nowrap', 
+                                            overflow: 'hidden', 
+                                            textOverflow: 'ellipsis',
+                                          }}
+                                        >
+                                          {expense.date_paid ? (
+                                            moment(expense.date_paid).format('MMMM Do, YYYY')
+                                          ) : expense.date_due && moment(expense.date_due).isBefore(moment(), 'day') ? (
+                                            <Chip icon={<Error />} label="Past due" color="error" variant="outlined" size="small" />
+                                          ) : (
+                                            <Chip icon={<Error />} label="Not paid" color="warning" variant="outlined" size="small" />
+                                          )}
+                                        </TableCell>
+                                        <TableCell sx={{ textAlign: 'center' }}>{expense.autopay ? <Check color="success" /> : ''}</TableCell>
+                                    </TableRow>
+                                  ))}
+                              </TableBody>
+                            </Table>
+                          </CardContent>
+                        </Card>
+                      ))
+                  )}
                 </Grid>
             </Grid>
             )}
