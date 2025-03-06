@@ -30,7 +30,7 @@ const IncomeList: React.FC<IncomeListProps> = ({ incomes }) => {
         return (
           <Grid item xs={12} key={income.id}>
             <Card
-              sx={{ display: "flex", flexDirection: "column", boxShadow: 3 }}
+              sx={{ display: "flex", flexDirection: "column", boxShadow: 3, borderRadius: 5 }}
             >
               <CardContent>
                 <Box

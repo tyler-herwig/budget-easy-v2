@@ -18,7 +18,7 @@ import MenuIcon from "@mui/icons-material/Menu";
 import Link from "next/link";
 import React from "react";
 import { useProfile } from "@/context/ProfileContext";
-import { Insights } from "@mui/icons-material";
+import { Dashboard, Insights } from "@mui/icons-material";
 
 const pages = [{ name: "Dashboard", href: "/" }];
 const settings = ["Account", "Logout"];
@@ -52,7 +52,7 @@ export default function Header() {
     <AppBar position="sticky">
       <Container maxWidth="xl">
         <Toolbar disableGutters>
-          <Insights sx={{ display: { xs: "none", md: "flex" }, mr: 1 }} />
+          <Insights sx={{ display: { xs: "none", md: "flex" }, mr: 1 }} color="primary" />
           <Typography
             variant="h6"
             noWrap
@@ -62,13 +62,12 @@ export default function Header() {
               mr: 2,
               display: { xs: "none", md: "flex" },
               fontFamily: "monospace",
-              fontWeight: 700,
               letterSpacing: ".3rem",
               color: "inherit",
               textDecoration: "none",
             }}
           >
-            BUDGET EASY
+            BUDGET <span style={{ marginLeft: 8, fontWeight: 'bolder' }}>EASY</span>
           </Typography>
 
           <Box sx={{ flexGrow: 1, display: { xs: "flex", md: "none" } }}>
@@ -102,14 +101,14 @@ export default function Header() {
                 <MenuItem key={page.name} onClick={handleCloseNavMenu}>
                   <Typography sx={{ textAlign: "center" }}>
                     <Link href={page.href} style={{ textDecoration: "none" }}>
-                      {page.name}
+                       {page.name}
                     </Link>
                   </Typography>
                 </MenuItem>
               ))}
             </Menu>
           </Box>
-          <Insights sx={{ display: { xs: "flex", md: "none" }, mr: 1 }} />
+          <Insights sx={{ display: { xs: "flex", md: "none" }, mr: 1 }} color="primary" />
           <Typography
             variant="h5"
             noWrap
@@ -128,7 +127,7 @@ export default function Header() {
           >
             BUDGET EASY
           </Typography>
-          <Box sx={{ flexGrow: 1, display: { xs: "none", md: "flex" } }}>
+          <Box sx={{ ml: 10, flexGrow: 1, display: { xs: "none", md: "flex" } }}>
             {pages.map((page) => (
               <Link
                 key={page.name}
@@ -136,7 +135,7 @@ export default function Header() {
                 style={{ textDecoration: "none" }}
                 passHref
               >
-                <Button sx={{ my: 2, color: "white", display: "block" }}>
+                <Button sx={{ my: 2, color: "white", textTransform: 'none' }}>
                   {page.name}
                 </Button>
               </Link>

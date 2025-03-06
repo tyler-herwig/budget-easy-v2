@@ -73,7 +73,15 @@ const IncomeVsExpensesChart: React.FC<IncomeVsExpenseChartProps> = ({
       },
     },
     scales: {
+      x: {
+        grid: {
+          display: false
+        }
+      },
       y: {
+        grid: {
+          display: false
+        },
         beginAtZero: true,
         ticks: {
           callback: function (value: any) {

@@ -28,7 +28,7 @@ const ExpenseList: React.FC<ExpenseListProps> = ({ expenses }) => {
   }, [expenses]);
 
   return Object.keys(groupedExpenses).map((monthYear, index) => (
-    <Card key={index} sx={{ mb: 3 }}>
+    <Card key={index} sx={{ mb: 3, borderRadius: 5 }}>
       <CardContent>
         <Typography variant="h6" color="primary">
           <CalendarMonth sx={{ pt: 1 }} /> {monthYear}

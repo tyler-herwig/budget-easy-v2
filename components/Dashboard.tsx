@@ -26,6 +26,7 @@ import ExpenseList from "./ExpenseList";
 const Dashboard: React.FC = () => {
   const [startDate, setStartDate] = useState<Moment | null>(null);
   const [endDate, setEndDate] = useState<Moment | null>(null);
+  const [loading, setLoading] = useState<boolean>(true);
 
   useEffect(() => {
     if (typeof window !== "undefined") {
@@ -37,6 +38,7 @@ const Dashboard: React.FC = () => {
       if (storedEndDate) {
         setEndDate(moment(storedEndDate));
       }
+      setLoading(false);
     }
   }, []);
 
@@ -83,7 +85,7 @@ const Dashboard: React.FC = () => {
     setStartDate(newValue);
   const handleEndDateChange = (newValue: Moment | null) => setEndDate(newValue);
 
-  if (isLoadingIncome || isLoadingExpenses) {
+  if (loading || isLoadingIncome || isLoadingExpenses) {
     return <LoadingSpinner />;
   }
 
@@ -138,7 +140,7 @@ const Dashboard: React.FC = () => {
               <Box
                 sx={{
                   position: "sticky",
-                  top: 180,
+                  top: 140,
                   backgroundColor: "inherit",
                 }}
               >
