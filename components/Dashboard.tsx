@@ -15,6 +15,7 @@ import { groupByMonthYear } from '@/utils/helpers/expense';
 import { fetchIncome } from '@/utils/fetch/income';
 import { LoadingSpinner } from './LoadingSpinner';
 import { CalendarMonth, Check, Error, MonetizationOn, Money } from '@mui/icons-material';
+import IncomeVsExpensesChart from './IncomeVsExpenseChart';
 
 const Dashboard: React.FC = () => {
   const [startDate, setStartDate] = useState<Moment | null>(null);
@@ -83,6 +84,15 @@ const Dashboard: React.FC = () => {
               </Alert>
             ) : (
               <Grid container spacing={3}>
+                <Grid item xs={12}>
+                  <Box sx={{ height: '400px', width: '100% !important' }}>
+                    {isLoadingIncome ? (
+                      <LoadingSpinner />
+                    ) : (
+                      <IncomeVsExpensesChart incomes={incomes} />
+                    )}
+                  </Box>
+                </Grid>
                 <Grid item xs={12} md={5}>
                     <Box 
                       sx={{ 
