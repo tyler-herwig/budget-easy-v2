@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useMemo, useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import { Grid, Container, Card, CardContent, Typography, Table, TableHead, TableBody, TableRow, TableCell, Box, Alert, AlertTitle, Chip } from '@mui/material';
 import { AdapterMoment } from '@mui/x-date-pickers/AdapterMoment'
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
@@ -20,6 +20,28 @@ import IncomeVsExpensesChart from './IncomeVsExpenseChart';
 const Dashboard: React.FC = () => {
   const [startDate, setStartDate] = useState<Moment | null>(null);
   const [endDate, setEndDate] = useState<Moment | null>(null);
+
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      const storedStartDate = localStorage.getItem('startDate');
+      const storedEndDate = localStorage.getItem('endDate');
+      if (storedStartDate) {
+        setStartDate(moment(storedStartDate));
+      }
+      if (storedEndDate) {
+        setEndDate(moment(storedEndDate));
+      }
+    }
+  }, []);
+
+  useEffect(() => {
+    if (startDate) {
+      localStorage.setItem('startDate', startDate.format('YYYY-MM-DD'));
+    }
+    if (endDate) {
+      localStorage.setItem('endDate', endDate.format('YYYY-MM-DD'));
+    }
+  }, [startDate, endDate]);
 
   const { data: incomes, isLoading: isLoadingIncome, isError: isErrorIncome, error: incomeError } = useQuery<Income[], Error>({
     queryKey: ['income', startDate, endDate],
@@ -45,6 +67,10 @@ const Dashboard: React.FC = () => {
 
   const handleStartDateChange = (newValue: Moment | null) => setStartDate(newValue);
   const handleEndDateChange = (newValue: Moment | null) => setEndDate(newValue);
+
+  if (isLoadingIncome || isLoadingExpenses) {
+    return <LoadingSpinner />
+  }
 
   return (
     <LocalizationProvider dateAdapter={AdapterMoment}>
@@ -86,11 +112,7 @@ const Dashboard: React.FC = () => {
               <Grid container spacing={3}>
                 <Grid item xs={12}>
                   <Box sx={{ height: '400px', width: '100% !important' }}>
-                    {isLoadingIncome ? (
-                      <LoadingSpinner />
-                    ) : (
-                      <IncomeVsExpensesChart incomes={incomes} />
-                    )}
+                    <IncomeVsExpensesChart incomes={incomes} />
                   </Box>
                 </Grid>
                 <Grid item xs={12} md={5}>
@@ -106,9 +128,7 @@ const Dashboard: React.FC = () => {
                             <Typography variant="h6" gutterBottom>
                                 Income
                             </Typography>
-                            {isLoadingIncome ? (
-                              <LoadingSpinner />
-                            ) : isErrorIncome ? (
+                            {isErrorIncome ? (
                               <Typography color="error">{(incomeError as Error).message || 'Failed to fetch income'}</Typography>
                             ) : (
                               <Table>
@@ -175,9 +195,7 @@ const Dashboard: React.FC = () => {
                         <Typography variant="h6" gutterBottom>
                             Expenses
                         </Typography>
-                        {isLoadingExpenses ? (
-                            <LoadingSpinner />
-                        ) : isErrorExpenses ? (
+                        {isErrorExpenses ? (
                             <Typography color="error">{(expensesError as Error).message || 'Failed to fetch expenses'}</Typography>
                         ) : (
                             // Render grouped expenses
