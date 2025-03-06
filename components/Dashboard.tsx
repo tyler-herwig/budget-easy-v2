@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useEffect, useMemo, useState } from 'react';
-import { Grid, Container, Card, CardContent, Typography, Table, TableHead, TableBody, TableRow, TableCell, Box, Alert, AlertTitle, Chip } from '@mui/material';
+import { Grid, Container, Card, CardContent, Typography, Table, TableHead, TableBody, TableRow, TableCell, Box, Alert, AlertTitle, Chip, LinearProgress, Tooltip } from '@mui/material';
 import { AdapterMoment } from '@mui/x-date-pickers/AdapterMoment'
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 import { DatePicker } from '@mui/x-date-pickers/DatePicker';
@@ -14,7 +14,7 @@ import { fetchExpenses } from '@/utils/fetch/expense';
 import { groupByMonthYear } from '@/utils/helpers/expense';
 import { fetchIncome } from '@/utils/fetch/income';
 import { LoadingSpinner } from './LoadingSpinner';
-import { CalendarMonth, Check, Error, MonetizationOn, Money } from '@mui/icons-material';
+import { CalendarMonth, Check, Error, MonetizationOn } from '@mui/icons-material';
 import IncomeVsExpensesChart from './IncomeVsExpenseChart';
 
 const Dashboard: React.FC = () => {
@@ -123,70 +123,109 @@ const Dashboard: React.FC = () => {
                         backgroundColor: 'inherit'
                       }}
                     >
-                      <Card>
-                          <CardContent>
-                            <Typography variant="h6" gutterBottom>
-                                Income
-                            </Typography>
-                            {isErrorIncome ? (
-                              <Typography color="error">{(incomeError as Error).message || 'Failed to fetch income'}</Typography>
-                            ) : (
-                              <Table>
-                                <TableHead>
-                                    <TableRow>
-                                      <TableCell>Income Date</TableCell>
-                                      <TableCell>Amount</TableCell>
-                                      <TableCell>Total Expenses</TableCell>
-                                      <TableCell>Money Remaining</TableCell>
-                                    </TableRow>
-                                </TableHead>
-                                <TableBody>
-                                  {incomes?.map((income) => (
-                                    <TableRow key={income.id}>
-                                      <TableCell sx={{ fontWeight: 'bold' }}>{moment(income.date_received).format('MMMM Do, YYYY')}</TableCell>
-                                      <TableCell>
-                                        <NumericFormat
+                      {isErrorIncome ? (
+                        <Typography color="error">{(incomeError as Error).message || 'Failed to fetch income'}</Typography>
+                      ) : (
+                        <Grid container spacing={2} sx={{ mb: 3 }}>
+                          {incomes?.map((income) => {
+                            const expensePercentage = income.amount > 0 ? (income.total_expenses / income.amount) * 100 : 0;
+
+                            return (
+                              <Grid item xs={12} key={income.id}>
+                                <Card sx={{ display: 'flex', flexDirection: 'column', boxShadow: 3 }}>
+                                  <CardContent>
+                                    {/* Income Row with 4 Columns */}
+                                    <Box sx={{ display: 'flex', justifyContent: 'space-between', mb: 1 }}>
+                                      <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center', flex: 1 }}>
+                                        <Typography variant="body2" color="textSecondary">
+                                          Income Date
+                                        </Typography>
+                                        <Typography variant="body2" sx={{ fontWeight: 'bold' }}>
+                                          {moment(income.date_received).format('MMMM Do, YYYY')}
+                                        </Typography>
+                                      </Box>
+                                      <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center', flex: 1 }}>
+                                        <Typography variant="body2" color="textSecondary">
+                                          Amount
+                                        </Typography>
+                                        <Typography variant="body2">
+                                          <NumericFormat
                                             value={income.amount || 0}
                                             displayType="text"
                                             thousandSeparator={true}
                                             prefix="$"
                                             decimalScale={2}
                                             fixedDecimalScale={true}
-                                        />
-                                      </TableCell>
-                                      <TableCell>
-                                        <NumericFormat
+                                          />
+                                        </Typography>
+                                      </Box>
+                                      <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center', flex: 1 }}>
+                                        <Typography variant="body2" color="textSecondary">
+                                          Total Expenses
+                                        </Typography>
+                                        <Typography variant="body2">
+                                          <NumericFormat
                                             value={income.total_expenses || 0}
                                             displayType="text"
                                             thousandSeparator={true}
                                             prefix="$"
                                             decimalScale={2}
                                             fixedDecimalScale={true}
-                                        />
-                                      </TableCell>
-                                      <TableCell>
-                                        <Chip 
-                                          icon={<MonetizationOn />} 
+                                          />
+                                        </Typography>
+                                      </Box>
+                                      <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center', flex: 1 }}>
+                                        <Typography variant="body2" color="textSecondary">
+                                          Money Remaining
+                                        </Typography>
+                                        <Chip
+                                          icon={<MonetizationOn />}
                                           label={
                                             <NumericFormat
-                                                value={income.money_remaining || 0}
-                                                displayType="text"
-                                                thousandSeparator={true}
-                                                decimalScale={2}
-                                                fixedDecimalScale={true}
+                                              value={income.money_remaining || 0}
+                                              displayType="text"
+                                              thousandSeparator={true}
+                                              decimalScale={2}
+                                              fixedDecimalScale={true}
                                             />
                                           }
-                                          color={income.money_remaining > 0 ? 'success' : 'error'} 
-                                          variant="outlined" 
+                                          color={
+                                            expensePercentage < 75 ? 'success' 
+                                              : expensePercentage < 100 ? 'warning' 
+                                              : 'error'
+                                          }
+                                          variant="outlined"
+                                          size="small"
                                         />
-                                      </TableCell>
-                                    </TableRow>
-                                  ))}
-                                </TableBody>
-                              </Table>
-                            )}
-                          </CardContent>
-                      </Card>
+                                      </Box>
+                                    </Box>
+                                    <Box sx={{ mt: 2 }}>
+                                      <Tooltip title={`${Math.round(Math.min(expensePercentage, 100))}% of income used`} arrow>
+                                        <Box>
+                                          <LinearProgress
+                                            sx={{
+                                              height: 8,
+                                              borderRadius: 5,
+                                              mt: 1,
+                                              '& .MuiLinearProgress-bar': {
+                                                backgroundColor: expensePercentage < 75 ? '#66bb6a'
+                                                  : expensePercentage < 100 ? '#ffa726'
+                                                  : '#f44336',
+                                              },
+                                            }}
+                                            variant="determinate"
+                                            value={Math.round(Math.min(expensePercentage, 100))}
+                                          />
+                                        </Box>
+                                      </Tooltip>
+                                    </Box>
+                                  </CardContent>
+                                </Card>
+                              </Grid>
+                            )
+                          })}
+                        </Grid>
+                      )}
                     </Box>
                 </Grid>
                 <Grid item xs={12} md={7}>
@@ -205,43 +244,66 @@ const Dashboard: React.FC = () => {
                                   <CalendarMonth sx={{ pt: 1}} /> {monthYear}
                                 </Typography>
                                 <Table>
-                                <TableHead>
-                                    <TableRow>
-                                    <TableCell>Expense</TableCell>
-                                    <TableCell>Amount</TableCell>
-                                    <TableCell>Date Due</TableCell>
-                                    <TableCell>Date Paid</TableCell>
-                                    <TableCell>Autopay</TableCell>
-                                    </TableRow>
-                                </TableHead>
-                                <TableBody>
-                                    {groupedExpenses[monthYear].map((expense, expenseIndex) => (
-                                      <TableRow key={expenseIndex}>
-                                          <TableCell sx={{ fontWeight: 'bold' }}>{expense.expense_name}</TableCell>
-                                          <TableCell>
-                                            <NumericFormat
-                                                value={expense.amount || 0}
-                                                displayType="text"
-                                                thousandSeparator={true}
-                                                prefix="$"
-                                                decimalScale={2}
-                                                fixedDecimalScale={true}
-                                            />
-                                          </TableCell>
-                                          <TableCell>{moment(expense.date_due).format('MMMM Do, YYYY')}</TableCell>
-                                          <TableCell>
-                                            {expense.date_paid ? (
-                                              moment(expense.date_paid).format('MMMM Do, YYYY')
-                                            ) : expense.date_due && moment(expense.date_due).isBefore(moment(), 'day') ? (
-                                              <Chip icon={<Error />} label="Past due" color="error" variant="outlined" size="small" />
-                                            ) : (
-                                              <Chip icon={<Error />} label="Not paid" color="warning" variant="outlined" size="small" />
-                                            )}
-                                          </TableCell>
-                                          <TableCell>{expense.autopay ? <Check color="success" /> : ''}</TableCell>
+                                  <TableHead>
+                                      <TableRow>
+                                      <TableCell>Expense</TableCell>
+                                      <TableCell>Amount</TableCell>
+                                      <TableCell>Date Due</TableCell>
+                                      <TableCell>Date Paid</TableCell>
+                                      <TableCell>Autopay</TableCell>
                                       </TableRow>
-                                    ))}
-                                </TableBody>
+                                  </TableHead>
+                                  <TableBody>
+                                      {groupedExpenses[monthYear].map((expense, expenseIndex) => (
+                                        <TableRow key={expenseIndex}>
+                                            <TableCell 
+                                              sx={{
+                                                fontWeight: 'bold', 
+                                                whiteSpace: 'nowrap', 
+                                                overflow: 'hidden', 
+                                                textOverflow: 'ellipsis',
+                                              }}
+                                            >
+                                              {expense.expense_name}
+                                            </TableCell>
+                                            <TableCell>
+                                              <NumericFormat
+                                                  value={expense.amount || 0}
+                                                  displayType="text"
+                                                  thousandSeparator={true}
+                                                  prefix="$"
+                                                  decimalScale={2}
+                                                  fixedDecimalScale={true}
+                                              />
+                                            </TableCell>
+                                            <TableCell 
+                                              sx={{
+                                                whiteSpace: 'nowrap', 
+                                                overflow: 'hidden', 
+                                                textOverflow: 'ellipsis',
+                                              }}
+                                            >
+                                              {moment(expense.date_due).format('MMMM Do, YYYY')}
+                                            </TableCell>
+                                            <TableCell 
+                                              sx={{
+                                                whiteSpace: 'nowrap', 
+                                                overflow: 'hidden', 
+                                                textOverflow: 'ellipsis',
+                                              }}
+                                            >
+                                              {expense.date_paid ? (
+                                                moment(expense.date_paid).format('MMMM Do, YYYY')
+                                              ) : expense.date_due && moment(expense.date_due).isBefore(moment(), 'day') ? (
+                                                <Chip icon={<Error />} label="Past due" color="error" variant="outlined" size="small" />
+                                              ) : (
+                                                <Chip icon={<Error />} label="Not paid" color="warning" variant="outlined" size="small" />
+                                              )}
+                                            </TableCell>
+                                            <TableCell sx={{ textAlign: 'center' }}>{expense.autopay ? <Check color="success" /> : ''}</TableCell>
+                                        </TableRow>
+                                      ))}
+                                  </TableBody>
                                 </Table>
                             </div>
                             ))
