@@ -4,7 +4,6 @@ import moment from "moment";
 // Group expenses by month and year
 export const groupByMonthYear = (expenses: Expense[]) => {
     return expenses.reduce((acc, expense) => {
-      // Parse the date using moment and format it as 'MMMM, YYYY'
       const monthYearKey = moment(expense.date_due).format('MMMM, YYYY');
   
       // Group expenses by month and year
