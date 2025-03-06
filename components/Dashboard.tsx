@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useMemo, useState } from 'react';
-import { Grid, Container, Card, CardContent, Typography, Table, TableHead, TableBody, TableRow, TableCell, Box, Alert, AlertTitle } from '@mui/material';
+import { Grid, Container, Card, CardContent, Typography, Table, TableHead, TableBody, TableRow, TableCell, Box, Alert, AlertTitle, Chip } from '@mui/material';
 import { AdapterMoment } from '@mui/x-date-pickers/AdapterMoment'
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 import { DatePicker } from '@mui/x-date-pickers/DatePicker';
@@ -14,6 +14,7 @@ import { fetchExpenses } from '@/utils/fetch/expense';
 import { groupByMonthYear } from '@/utils/helpers/expense';
 import { fetchIncome } from '@/utils/fetch/income';
 import { LoadingSpinner } from './LoadingSpinner';
+import { CalendarMonth, Check, Error, MonetizationOn, Money } from '@mui/icons-material';
 
 const Dashboard: React.FC = () => {
   const [startDate, setStartDate] = useState<Moment | null>(null);
@@ -50,9 +51,8 @@ const Dashboard: React.FC = () => {
           sx={{
             position: 'sticky', 
             top: 68.5, 
-            backgroundColor: 'white',
             zIndex: 1,
-            boxShadow: '0px 2px 4px -1px rgba(0,0,0,0.2),0px 4px 5px 0px rgba(0,0,0,0.14),0px 1px 10px 0px rgba(0,0,0,0.12)'
+            backgroundColor: 'inherit'
           }}
         >
           <Container maxWidth="xl" sx={{ mb: 3, pt: 2, pb: 2 }}>
@@ -87,8 +87,8 @@ const Dashboard: React.FC = () => {
                     <Box 
                       sx={{ 
                         position: 'sticky', 
-                        top: 180, 
-                        backgroundColor: 'white' 
+                        top: 180,
+                        backgroundColor: 'inherit'
                       }}
                     >
                       <Card>
@@ -113,7 +113,7 @@ const Dashboard: React.FC = () => {
                                 <TableBody>
                                   {incomes?.map((income) => (
                                     <TableRow key={income.id}>
-                                      <TableCell>{moment(income.date_received).format('MMMM Do, YYYY')}</TableCell>
+                                      <TableCell sx={{ fontWeight: 'bold' }}>{moment(income.date_received).format('MMMM Do, YYYY')}</TableCell>
                                       <TableCell>
                                         <NumericFormat
                                             value={income.amount || 0}
@@ -135,13 +135,19 @@ const Dashboard: React.FC = () => {
                                         />
                                       </TableCell>
                                       <TableCell>
-                                        <NumericFormat
-                                            value={income.money_remaining || 0}
-                                            displayType="text"
-                                            thousandSeparator={true}
-                                            prefix="$"
-                                            decimalScale={2}
-                                            fixedDecimalScale={true}
+                                        <Chip 
+                                          icon={<MonetizationOn />} 
+                                          label={
+                                            <NumericFormat
+                                                value={income.money_remaining || 0}
+                                                displayType="text"
+                                                thousandSeparator={true}
+                                                decimalScale={2}
+                                                fixedDecimalScale={true}
+                                            />
+                                          }
+                                          color={income.money_remaining > 0 ? 'success' : 'error'} 
+                                          variant="outlined" 
                                         />
                                       </TableCell>
                                     </TableRow>
@@ -167,8 +173,8 @@ const Dashboard: React.FC = () => {
                             // Render grouped expenses
                             Object.keys(groupedExpenses).map((monthYear, index) => (
                             <div key={index}>
-                                <Typography variant="h6" sx={{ mt: 3 }}>
-                                {monthYear}
+                                <Typography variant="h6" sx={{ mt: 3 }} color="primary">
+                                  <CalendarMonth sx={{ pt: 1}} /> {monthYear}
                                 </Typography>
                                 <Table>
                                 <TableHead>
@@ -183,7 +189,7 @@ const Dashboard: React.FC = () => {
                                 <TableBody>
                                     {groupedExpenses[monthYear].map((expense, expenseIndex) => (
                                       <TableRow key={expenseIndex}>
-                                          <TableCell>{expense.expense_name}</TableCell>
+                                          <TableCell sx={{ fontWeight: 'bold' }}>{expense.expense_name}</TableCell>
                                           <TableCell>
                                             <NumericFormat
                                                 value={expense.amount || 0}
@@ -195,8 +201,8 @@ const Dashboard: React.FC = () => {
                                             />
                                           </TableCell>
                                           <TableCell>{moment(expense.date_due).format('MMMM Do, YYYY')}</TableCell>
-                                          <TableCell>{expense.date_paid ? moment(expense.date_paid).format('MMMM Do, YYYY') : 'Not Paid'}</TableCell>
-                                          <TableCell>{expense.autopay ? 'Yes' : 'No'}</TableCell>
+                                          <TableCell>{expense.date_paid ? moment(expense.date_paid).format('MMMM Do, YYYY') : <Chip icon={<Error />} label="Not paid" color="error" variant="outlined" size="small" />}</TableCell>
+                                          <TableCell>{expense.autopay ? <Check color="success" /> : ''}</TableCell>
                                       </TableRow>
                                     ))}
                                 </TableBody>

@@ -5,6 +5,7 @@ import { ReactNode } from 'react';
 import theme from './theme';
 import { ReactQueryClientProvider } from '@/components/ReactQueryClientProvider'
 import './globals.css';
+import { CssBaseline } from '@mui/material';
 
 const roboto = Roboto({
   weight: ['300', '400', '500', '700'],
@@ -23,6 +24,7 @@ export default function RootLayout(props: RootLayoutProps) {
       <body className={roboto.variable}>
           <AppRouterCacheProvider>
             <ThemeProvider theme={theme}>
+              <CssBaseline />
               <ReactQueryClientProvider>
                 {props.children}
               </ReactQueryClientProvider>
