@@ -17,7 +17,6 @@ export default async function Home() {
 
   return (
     <ProfileProvider user={user}>
-      <Header />
       <Dashboard />
     </ProfileProvider>
   );

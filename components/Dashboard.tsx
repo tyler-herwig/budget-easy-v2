@@ -8,6 +8,8 @@ import {
   Box,
   Alert,
   AlertTitle,
+  Card,
+  CardContent,
 } from "@mui/material";
 import { AdapterMoment } from "@mui/x-date-pickers/AdapterMoment";
 import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
@@ -91,84 +93,87 @@ const Dashboard: React.FC = () => {
 
   return (
     <LocalizationProvider dateAdapter={AdapterMoment}>
-      <Box
-        sx={{
-          position: "sticky",
-          top: 68.5,
-          zIndex: 1,
-          backgroundColor: "inherit",
-        }}
-      >
-        <Container maxWidth="xl" sx={{ mb: 3, pt: 2, pb: 2 }}>
+      <Grid container spacing={3} sx={{ pl: 3, pr: 3}}>
+        <Grid item xs={12}>
           <Box
             sx={{
-              display: "flex",
-              gap: 2,
+              position: "sticky",
+              top: 0,
+              zIndex: 1,
+              backgroundColor: "#121212",
+              pt: 3,
+              pb: 3,
             }}
           >
-            <DatePicker
-              label="Start Date"
-              value={startDate}
-              onChange={handleStartDateChange}
-            />
-            <DatePicker
-              label="End Date"
-              value={endDate}
-              onChange={handleEndDateChange}
-            />
+            <Box
+              sx={{
+                display: "flex",
+                gap: 2,
+              }}
+            >
+              <DatePicker
+                label="Start Date"
+                value={startDate}
+                onChange={handleStartDateChange}
+              />
+              <DatePicker
+                label="End Date"
+                value={endDate}
+                onChange={handleEndDateChange}
+              />
+            </Box>
           </Box>
-        </Container>
-      </Box>
-      <Container maxWidth="xl" sx={{ mt: 3, mb: 3 }}>
-        {(!incomes || !expenses) && (!startDate || !endDate) ? (
-          <Alert variant="outlined" severity="info">
-            <AlertTitle>Get Started</AlertTitle>
-            To get started, select a start date and end date. Once selected, you
-            will see income and expenses for that time range.
-          </Alert>
-        ) : (
-          <Grid container spacing={3}>
-            <Grid item xs={12}>
-              <Box sx={{ height: "400px", width: "100% !important" }}>
-                <IncomeVsExpensesChart incomes={incomes} />
-              </Box>
-            </Grid>
-            <Grid item xs={12} md={5}>
-              <Typography variant="h6" gutterBottom>
-                Income
-              </Typography>
-              <Box
-                sx={{
-                  position: "sticky",
-                  top: 140,
-                  backgroundColor: "inherit",
-                }}
-              >
-                {isErrorIncome ? (
+          {(!incomes || !expenses) && (!startDate || !endDate) ? (
+            <Alert variant="outlined" severity="info">
+              <AlertTitle>Get Started</AlertTitle>
+              To get started, select a start date and end date. Once selected,
+              you will see income and expenses for that time range.
+            </Alert>
+          ) : (
+            <Grid container spacing={3} sx={{ mt: 3 }}>
+              <Grid item xs={12}>
+                <Box sx={{ height: "400px", width: "100% !important" }}>
+                  <IncomeVsExpensesChart incomes={incomes} />
+                </Box>
+              </Grid>
+              <Grid item xs={12} md={5}>
+                <Typography variant="h6" gutterBottom>
+                  Income
+                </Typography>
+                <Box
+                  sx={{
+                    position: "sticky",
+                    top: 90,
+                    backgroundColor: "inherit",
+                  }}
+                >
+                  {isErrorIncome ? (
+                    <Typography color="error">
+                      {(incomeError as Error).message ||
+                        "Failed to fetch income"}
+                    </Typography>
+                  ) : (
+                    <IncomeList incomes={incomes} />
+                  )}
+                </Box>
+              </Grid>
+              <Grid item xs={12} md={7}>
+                <Typography variant="h6" gutterBottom>
+                  Expenses
+                </Typography>
+                {isErrorExpenses ? (
                   <Typography color="error">
-                    {(incomeError as Error).message || "Failed to fetch income"}
+                    {(expensesError as Error).message ||
+                      "Failed to fetch expenses"}
                   </Typography>
                 ) : (
-                  <IncomeList incomes={incomes} />
+                  <ExpenseList expenses={expenses} />
                 )}
-              </Box>
+              </Grid>
             </Grid>
-            <Grid item xs={12} md={7}>
-              <Typography variant="h6" gutterBottom>
-                Expenses
-              </Typography>
-              {isErrorExpenses ? (
-                <Typography color="error">
-                  {(expensesError as Error).message ||
-                    "Failed to fetch expenses"}
-                </Typography>
-              ) : (
-                <ExpenseList expenses={expenses} />
-              )}
-            </Grid>
-          </Grid>
-        )}
-      </Container>
+          )}
+        </Grid>
+      </Grid>
     </LocalizationProvider>
   );
 };
