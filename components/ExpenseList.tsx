@@ -36,11 +36,11 @@ const ExpenseList: React.FC<ExpenseListProps> = ({ expenses }) => {
         <Table>
           <TableHead>
             <TableRow>
-              <TableCell>Expense</TableCell>
-              <TableCell>Amount</TableCell>
-              <TableCell>Date Due</TableCell>
-              <TableCell>Date Paid</TableCell>
-              <TableCell>Autopay</TableCell>
+              <TableCell sx={{ fontWeight: "bold" }}>Expense</TableCell>
+              <TableCell sx={{ fontWeight: "bold" }}>Amount</TableCell>
+              <TableCell sx={{ fontWeight: "bold" }}>Date Due</TableCell>
+              <TableCell sx={{ fontWeight: "bold" }}>Date Paid</TableCell>
+              <TableCell sx={{ fontWeight: "bold" }}>Autopay</TableCell>
             </TableRow>
           </TableHead>
           <TableBody>

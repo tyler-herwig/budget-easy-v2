@@ -42,6 +42,16 @@ export async function GET(request: Request) {
       return NextResponse.json({ error: incomeError.message }, { status: 500 })
     }
 
+    // Fetch all additional_income records for this user
+    const { data: additionalIncomeRecords, error: additionalIncomeError } = await supabase
+      .from('additional_income')
+      .select('*')
+      .eq('profile_id', user.id)
+
+    if (additionalIncomeError) {
+      return NextResponse.json({ error: additionalIncomeError.message }, { status: 500 })
+    }
+
     // Fetch all expenses for this user in the given date range
     let expenseQuery = supabase
       .from('expenses')
@@ -63,8 +73,19 @@ export async function GET(request: Request) {
       return NextResponse.json({ error: expenseError.message }, { status: 500 })
     }
 
-    // Compute total_expenses and money_remaining for each income record
+    // Compute total_expenses, money_remaining, and include additional_income
     const enhancedIncome = incomeRecords.map((income, index) => {
+      // Get additional_income entries linked to this income
+      const relatedAdditionalIncome = additionalIncomeRecords.filter(
+        (entry) => entry.income_id === income.id
+      )
+
+      // Calculate total additional income sum
+      const additionalIncomeSum = relatedAdditionalIncome.reduce(
+        (sum, entry) => sum + Number(entry.amount || 0),
+        0
+      )
+
       // Define the range for expenses: between this income and the next one
       const nextIncomeDate = incomeRecords[index + 1]?.date_received || null
 
@@ -76,15 +97,20 @@ export async function GET(request: Request) {
       })
 
       // Calculate total_expenses in this range
-      const total_expenses = filteredExpenses.reduce((sum, expense) => sum + Number(expense.amount || 0), 0)
+      const total_expenses = filteredExpenses.reduce(
+        (sum, expense) => sum + Number(expense.amount || 0),
+        0
+      )
 
       // Calculate money_remaining
-      const money_remaining = Number(income.amount) - total_expenses
+      const money_remaining = Number(income.amount) + additionalIncomeSum - total_expenses
 
       return {
         ...income,
+        amount: Number(income.amount) + additionalIncomeSum, // Adjusted income amount
         total_expenses,
         money_remaining,
+        additional_income: relatedAdditionalIncome, // Include additional income records
       }
     })
 

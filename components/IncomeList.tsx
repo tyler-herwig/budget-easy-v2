@@ -1,7 +1,7 @@
 "use client";
 
 import { Income } from "@/types/income";
-import { MonetizationOn } from "@mui/icons-material";
+import { Add, ExpandMore, MonetizationOn } from "@mui/icons-material";
 import {
   Grid,
   Card,
@@ -11,6 +11,19 @@ import {
   Chip,
   Tooltip,
   LinearProgress,
+  Button,
+  IconButton,
+  Badge,
+  Accordion,
+  AccordionDetails,
+  AccordionSummary,
+  Table,
+  TableCell,
+  TableHead,
+  TableRow,
+  TableBody,
+  Paper,
+  useTheme,
 } from "@mui/material";
 import moment from "moment";
 import React from "react";
@@ -21,6 +34,8 @@ interface IncomeListProps {
 }
 
 const IncomeList: React.FC<IncomeListProps> = ({ incomes }) => {
+  const theme = useTheme();
+
   return (
     <Grid container spacing={2} sx={{ mb: 3 }}>
       {incomes?.map((income) => {
@@ -30,7 +45,12 @@ const IncomeList: React.FC<IncomeListProps> = ({ incomes }) => {
         return (
           <Grid item xs={12} key={income.id}>
             <Card
-              sx={{ display: "flex", flexDirection: "column", boxShadow: 3, borderRadius: 5 }}
+              sx={{
+                display: "flex",
+                flexDirection: "column",
+                boxShadow: 3,
+                borderRadius: 5,
+              }}
             >
               <CardContent>
                 <Box
@@ -160,6 +180,151 @@ const IncomeList: React.FC<IncomeListProps> = ({ incomes }) => {
                       />
                     </Box>
                   </Tooltip>
+                </Box>
+                <Box
+                  sx={{
+                    mt: 2,
+                  }}
+                >
+                  {income.additional_income.length > 0 ? (
+                    <Accordion
+                      sx={{
+                        boxShadow: "none",
+                        border: "none",
+                        margin: 0,
+                        padding: 0,
+                        "&:before": { display: "none" },
+                      }}
+                    >
+                      <AccordionSummary
+                        expandIcon={<ExpandMore />}
+                        aria-controls="panel1-content"
+                        id="panel1-header"
+                        sx={{
+                          margin: 0,
+                          padding: 0,
+                          minHeight: "unset",
+                          "& .MuiAccordionSummary-content": {
+                            margin: 0,
+                          },
+                        }}
+                      >
+                        <Badge
+                          badgeContent={
+                            income.additional_income.length > 0
+                              ? income.additional_income.length
+                              : null
+                          }
+                          color="primary"
+                          sx={{
+                            "& .MuiBadge-badge": {
+                              right: -10,
+                              top: 10,
+                            },
+                          }}
+                        >
+                          <Typography variant="body2" sx={{ pr: 1 }}>
+                            Additional Income
+                          </Typography>
+                        </Badge>
+                      </AccordionSummary>
+                      <AccordionDetails>
+                        <Box
+                          sx={{
+                            display: "flex",
+                            justifyContent: "flex-end",
+                            mb: 2,
+                          }}
+                        >
+                          <Button
+                            variant="outlined"
+                            size="small"
+                            startIcon={<Add />}
+                            sx={{ borderRadius: "15px" }}
+                          >
+                            Additional Income
+                          </Button>
+                        </Box>
+                        <Grid container>
+                          <Grid item xs={4}>
+                            <Box
+                              sx={{
+                                display: "flex",
+                                alignItems: "center",
+                                justifyContent: "center",
+                                height: "100%",
+                              }}
+                            >
+                              <Typography variant="h5" sx={{ fontWeight: "bolder" }}>
+                                <NumericFormat
+                                  value={income.additional_income.reduce(
+                                    (sum, item) => sum + item.amount,
+                                    0
+                                  )}
+                                  displayType="text"
+                                  thousandSeparator={true}
+                                  prefix="$"
+                                  decimalScale={2}
+                                  fixedDecimalScale={true}
+                                />
+                              </Typography>
+                            </Box>
+                          </Grid>
+                          <Grid item xs={8}>
+                            <Table size="small">
+                              <TableHead>
+                                <TableRow>
+                                  <TableCell sx={{ fontWeight: "bold" }}>
+                                    Description
+                                  </TableCell>
+                                  <TableCell sx={{ fontWeight: "bold" }}>
+                                    Amount
+                                  </TableCell>
+                                </TableRow>
+                              </TableHead>
+                              <TableBody>
+                                {income.additional_income.map(
+                                  (additionalIncome) => (
+                                    <TableRow key={additionalIncome.id}>
+                                      <TableCell sx={{ fontWeight: "bold" }}>
+                                        {additionalIncome.description}
+                                      </TableCell>
+                                      <TableCell>
+                                        <NumericFormat
+                                          value={additionalIncome.amount || 0}
+                                          displayType="text"
+                                          thousandSeparator={true}
+                                          prefix="$"
+                                          decimalScale={2}
+                                          fixedDecimalScale={true}
+                                        />
+                                      </TableCell>
+                                    </TableRow>
+                                  )
+                                )}
+                              </TableBody>
+                            </Table>
+                          </Grid>
+                        </Grid>
+                      </AccordionDetails>
+                    </Accordion>
+                  ) : (
+                    <Box
+                      sx={{
+                        display: "flex",
+                        justifyContent: "flex-end"
+                      }}
+                    >
+                      <Button
+                        variant="outlined"
+                        size="small"
+                        startIcon={<Add />}
+                        sx={{ borderRadius: "15px", mr: 1 }}
+                      >
+                        Additional Income
+                      </Button>
+                    </Box>
+                  )}
                 </Box>
               </CardContent>
             </Card>

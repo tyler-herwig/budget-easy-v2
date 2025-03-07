@@ -148,7 +148,7 @@ const Dashboard: React.FC = () => {
                         "Failed to fetch income"}
                     </Typography>
                   ) : loading || isLoadingIncome ? (
-                    <SkeletonCard count={5} width={634.75} height={108.02} />
+                    <SkeletonCard count={5} width={634.75} height={154.77} />
                   ) : (
                     <IncomeList incomes={incomes} />
                   )}
