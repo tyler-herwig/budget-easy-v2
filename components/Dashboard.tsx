@@ -3,14 +3,10 @@
 import React, { useEffect, useState } from "react";
 import {
   Grid,
-  Container,
   Typography,
   Box,
   Alert,
   AlertTitle,
-  Card,
-  CardContent,
-  useTheme,
 } from "@mui/material";
 import { AdapterMoment } from "@mui/x-date-pickers/AdapterMoment";
 import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
@@ -21,17 +17,15 @@ import { Expense } from "@/types/expense";
 import { Income } from "@/types/income";
 import { fetchExpenses } from "@/utils/fetch/expense";
 import { fetchIncome } from "@/utils/fetch/income";
-import { LoadingSpinner } from "./LoadingSpinner";
 import IncomeVsExpensesChart from "./IncomeVsExpenseChart";
 import IncomeList from "./IncomeList";
 import ExpenseList from "./ExpenseList";
+import { SkeletonCard } from "./Loaders/SkeletonCard";
 
 const Dashboard: React.FC = () => {
   const [startDate, setStartDate] = useState<Moment | null>(null);
   const [endDate, setEndDate] = useState<Moment | null>(null);
   const [loading, setLoading] = useState<boolean>(true);
-
-  const theme = useTheme();
 
   useEffect(() => {
     if (typeof window !== "undefined") {
@@ -90,20 +84,16 @@ const Dashboard: React.FC = () => {
     setStartDate(newValue);
   const handleEndDateChange = (newValue: Moment | null) => setEndDate(newValue);
 
-  if (loading || isLoadingIncome || isLoadingExpenses) {
-    return <LoadingSpinner />;
-  }
-
   return (
     <LocalizationProvider dateAdapter={AdapterMoment}>
-      <Grid container spacing={3} sx={{ pl: 3, pr: 3}}>
+      <Grid container spacing={3} sx={{ pl: 3, pr: 3 }}>
         <Grid item xs={12}>
           <Box
-            sx= {{
-              right: '15px',
-              position: 'fixed',
-              top: '15px',
-              zIndex: 1300
+            sx={{
+              right: "15px",
+              position: "fixed",
+              top: "15px",
+              zIndex: 1300,
             }}
           >
             <Box
@@ -124,8 +114,8 @@ const Dashboard: React.FC = () => {
               />
             </Box>
           </Box>
-          {(!incomes || !expenses) && (!startDate || !endDate) ? (
-            <Alert variant="outlined" severity="info">
+          {!loading && (!incomes || !expenses) && (!startDate || !endDate) ? (
+            <Alert variant="outlined" severity="info" sx={{ mt: 3 }}>
               <AlertTitle>Get Started</AlertTitle>
               To get started, select a start date and end date. Once selected,
               you will see income and expenses for that time range.
@@ -134,7 +124,11 @@ const Dashboard: React.FC = () => {
             <Grid container spacing={3} sx={{ mt: 3 }}>
               <Grid item xs={12}>
                 <Box sx={{ height: "400px", width: "100% !important" }}>
-                  <IncomeVsExpensesChart incomes={incomes} />
+                  {loading || isLoadingIncome ? (
+                    <SkeletonCard count={1} width={1557} height={400} />
+                  ) : (
+                    <IncomeVsExpensesChart incomes={incomes} />
+                  )}
                 </Box>
               </Grid>
               <Grid item xs={12} md={5}>
@@ -153,6 +147,8 @@ const Dashboard: React.FC = () => {
                       {(incomeError as Error).message ||
                         "Failed to fetch income"}
                     </Typography>
+                  ) : loading || isLoadingIncome ? (
+                    <SkeletonCard count={5} width={634.75} height={108.02} />
                   ) : (
                     <IncomeList incomes={incomes} />
                   )}
@@ -167,6 +163,8 @@ const Dashboard: React.FC = () => {
                     {(expensesError as Error).message ||
                       "Failed to fetch expenses"}
                   </Typography>
+                ) : loading || isLoadingExpenses ? (
+                  <SkeletonCard count={1} width={898.25} height={1000} />
                 ) : (
                   <ExpenseList expenses={expenses} />
                 )}

@@ -30,6 +30,7 @@ import {
   MonetizationOn,
   Settings
 } from "@mui/icons-material";
+import ProfileWidget from "./ProfileWidget";
 
 const drawerWidth = 300;
 
@@ -190,37 +191,7 @@ const PageWrapper: React.FC = () => {
             {theme.direction === "rtl" ? <ChevronRight /> : <ChevronLeft />}
           </IconButton>
         </DrawerHeader>
-        <Box
-          sx={[
-            {
-              display: "flex",
-              flexDirection: "column",
-              alignItems: "center",
-              justifyContent: "center",
-              textAlign: "center",
-              padding: "15px",
-            },
-            !open && { display: "none" },
-          ]}
-        >
-          <Avatar sx={{ width: 80, height: 80 }} />
-          <Typography variant="body2" color="text.secondary" sx={{ mt: 1 }}>
-            Welcome back,
-          </Typography>
-          <Typography variant="h6" fontWeight="bold">
-            Tyler Herwig
-          </Typography>
-          <Chip
-            icon={<MonetizationOn />}
-            label="$1,265.15"
-            color="success"
-            variant="outlined"
-            sx={{ mt: 5 }}
-          />
-          <Typography variant="body2" color="text.secondary">
-            Money remaining
-          </Typography>
-        </Box>
+        <ProfileWidget open={open} />
         <Box
           sx={
             !open
