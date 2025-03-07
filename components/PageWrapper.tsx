@@ -18,6 +18,7 @@ import {
   ListItemText,
   Avatar,
   Chip,
+  Button,
 } from "@mui/material";
 import {
   AccountCircle,
@@ -28,9 +29,10 @@ import {
   Logout,
   Menu,
   MonetizationOn,
-  Settings
+  Settings,
 } from "@mui/icons-material";
 import ProfileWidget from "./ProfileWidget";
+import Link from "next/link";
 
 const drawerWidth = 300;
 
@@ -211,52 +213,55 @@ const PageWrapper: React.FC = () => {
                 disablePadding
                 sx={{ display: "block" }}
               >
-                <ListItemButton
-                  sx={[
-                    {
-                      minHeight: 48,
-                      px: 2.5,
-                      borderRadius: "15px",
-                    },
-                    open
-                      ? {
-                          justifyContent: "initial",
-                        }
-                      : {
-                          justifyContent: "center",
-                        },
-                  ]}
-                >
-                  <ListItemIcon
+                <Link href={page.link} passHref legacyBehavior>
+                  <ListItemButton
+                    component="a"
                     sx={[
                       {
-                        minWidth: 0,
-                        justifyContent: "center",
+                        minHeight: 48,
+                        px: 2.5,
+                        borderRadius: "15px",
                       },
                       open
                         ? {
-                            mr: 3,
+                            justifyContent: "initial",
                           }
                         : {
-                            mr: "auto",
+                            justifyContent: "center",
                           },
                     ]}
                   >
-                    {page.icon}
-                  </ListItemIcon>
-                  <ListItemText
-                    primary={page.name}
-                    sx={[
-                      open
-                        ? {
-                            opacity: 1,
-                          }
-                        : {
-                            opacity: 0,
-                          },
-                    ]}
-                  />
-                </ListItemButton>
+                    <ListItemIcon
+                      sx={[
+                        {
+                          minWidth: 0,
+                          justifyContent: "center",
+                        },
+                        open
+                          ? {
+                              mr: 3,
+                            }
+                          : {
+                              mr: "auto",
+                            },
+                      ]}
+                    >
+                      {page.icon}
+                    </ListItemIcon>
+                    <ListItemText
+                      primary={page.name}
+                      sx={[
+                        open
+                          ? {
+                              opacity: 1,
+                            }
+                          : {
+                              opacity: 0,
+                            },
+                      ]}
+                    />
+                  </ListItemButton>
+                </Link>
               </ListItem>
             ))}
           </List>
@@ -264,66 +269,26 @@ const PageWrapper: React.FC = () => {
         <Box
           sx={
             !open
-              ? {}
+              ? { display: "none" }
               : {
                   display: "flex",
                   justifyContent: "center",
                   width: "100%",
                   position: "absolute",
-                  bottom: 0,
+                  bottom: "15px",
                 }
           }
         >
-          <List>
-            <ListItem disablePadding sx={{ display: "block" }}>
-              <ListItemButton
-                sx={[
-                  {
-                    minHeight: 48,
-                    px: 2.5,
-                    borderRadius: "15px",
-                  },
-                  open
-                    ? {
-                        justifyContent: "initial",
-                      }
-                    : {
-                        justifyContent: "center",
-                      },
-                ]}
-              >
-                <ListItemIcon
-                  sx={[
-                    {
-                      minWidth: 0,
-                      justifyContent: "center",
-                    },
-                    open
-                      ? {
-                          mr: 3,
-                        }
-                      : {
-                          mr: "auto",
-                        },
-                  ]}
-                >
-                  <Logout />
-                </ListItemIcon>
-                <ListItemText
-                  primary="Sign-out"
-                  sx={[
-                    open
-                      ? {
-                          opacity: 1,
-                        }
-                      : {
-                          opacity: 0,
-                        },
-                  ]}
-                />
-              </ListItemButton>
-            </ListItem>
-          </List>
+          <form action="/auth/signout" method="post">
+            <Button
+              type="submit"
+              variant="text"
+              startIcon={<Logout />}
+              sx={{ color: "inherit", textTransform: "capitalize" }}
+            >
+              Sign-out
+            </Button>
+          </form>
         </Box>
       </Drawer>
       <Box
