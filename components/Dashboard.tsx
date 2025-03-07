@@ -10,6 +10,7 @@ import {
   AlertTitle,
   Card,
   CardContent,
+  useTheme,
 } from "@mui/material";
 import { AdapterMoment } from "@mui/x-date-pickers/AdapterMoment";
 import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
@@ -29,6 +30,8 @@ const Dashboard: React.FC = () => {
   const [startDate, setStartDate] = useState<Moment | null>(null);
   const [endDate, setEndDate] = useState<Moment | null>(null);
   const [loading, setLoading] = useState<boolean>(true);
+
+  const theme = useTheme();
 
   useEffect(() => {
     if (typeof window !== "undefined") {
@@ -96,13 +99,11 @@ const Dashboard: React.FC = () => {
       <Grid container spacing={3} sx={{ pl: 3, pr: 3}}>
         <Grid item xs={12}>
           <Box
-            sx={{
-              position: "sticky",
-              top: 0,
-              zIndex: 1,
-              backgroundColor: "#121212",
-              pt: 3,
-              pb: 3,
+            sx= {{
+              right: '15px',
+              position: 'fixed',
+              top: '15px',
+              zIndex: 1300
             }}
           >
             <Box
@@ -143,7 +144,7 @@ const Dashboard: React.FC = () => {
                 <Box
                   sx={{
                     position: "sticky",
-                    top: 90,
+                    top: 80,
                     backgroundColor: "inherit",
                   }}
                 >
