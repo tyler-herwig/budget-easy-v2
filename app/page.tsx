@@ -1,5 +1,4 @@
 import Dashboard from '@/components/Dashboard'
-import Header from '@/components/Header'
 import PageWrapper from '@/components/PageWrapper'
 import { ProfileProvider } from '@/context/ProfileContext'
 import { createClient } from '@/utils/supabase/server'
@@ -18,7 +17,7 @@ export default async function Home() {
 
   return (
     <ProfileProvider user={user}>
-      <PageWrapper />
+      <PageWrapper title="Dashboard" children={<Dashboard />} />
     </ProfileProvider>
   );
 }

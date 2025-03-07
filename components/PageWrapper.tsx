@@ -4,7 +4,6 @@ import React from "react";
 import { styled, useTheme, Theme, CSSObject } from "@mui/material/styles";
 import MuiAppBar, { AppBarProps as MuiAppBarProps } from "@mui/material/AppBar";
 import MuiDrawer from "@mui/material/Drawer";
-import Dashboard from "./Dashboard";
 import {
   Box,
   CssBaseline,
@@ -16,8 +15,6 @@ import {
   ListItemButton,
   ListItemIcon,
   ListItemText,
-  Avatar,
-  Chip,
   Button,
 } from "@mui/material";
 import {
@@ -28,7 +25,6 @@ import {
   Insights,
   Logout,
   Menu,
-  MonetizationOn,
   Settings,
 } from "@mui/icons-material";
 import ProfileWidget from "./ProfileWidget";
@@ -118,7 +114,12 @@ const Drawer = styled(MuiDrawer, {
   ],
 }));
 
-const PageWrapper: React.FC = () => {
+interface PageWrapperProps {
+    title: string;
+    children: React.ReactNode;
+}
+
+const PageWrapper: React.FC<PageWrapperProps> = ({ title, children }) => {
   const theme = useTheme();
   const [open, setOpen] = React.useState<boolean>(true);
 
@@ -162,7 +163,7 @@ const PageWrapper: React.FC = () => {
             <Menu />
           </IconButton>
           <Typography variant="h6" color="inherit" noWrap>
-            Dashboard
+            {title}
           </Typography>
         </Toolbar>
       </AppBar>
@@ -310,7 +311,7 @@ const PageWrapper: React.FC = () => {
         }}
       >
         <DrawerHeader />
-        <Dashboard />
+        {children}
       </Box>
     </Box>
   );
