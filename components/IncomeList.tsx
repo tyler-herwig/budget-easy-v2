@@ -28,6 +28,7 @@ import {
 import moment from "moment";
 import React from "react";
 import { NumericFormat } from "react-number-format";
+import AdditionalIncomeTable from "./Income/AdditionalIncomeTable";
 
 interface IncomeListProps {
   incomes: Income[] | undefined;
@@ -245,74 +246,14 @@ const IncomeList: React.FC<IncomeListProps> = ({ incomes }) => {
                             Additional Income
                           </Button>
                         </Box>
-                        <Grid container>
-                          <Grid item xs={4}>
-                            <Box
-                              sx={{
-                                display: "flex",
-                                alignItems: "center",
-                                justifyContent: "center",
-                                height: "100%",
-                              }}
-                            >
-                              <Typography variant="h5" sx={{ fontWeight: "bolder" }}>
-                                <NumericFormat
-                                  value={income.additional_income.reduce(
-                                    (sum, item) => sum + item.amount,
-                                    0
-                                  )}
-                                  displayType="text"
-                                  thousandSeparator={true}
-                                  prefix="$"
-                                  decimalScale={2}
-                                  fixedDecimalScale={true}
-                                />
-                              </Typography>
-                            </Box>
-                          </Grid>
-                          <Grid item xs={8}>
-                            <Table size="small">
-                              <TableHead>
-                                <TableRow>
-                                  <TableCell sx={{ fontWeight: "bold" }}>
-                                    Description
-                                  </TableCell>
-                                  <TableCell sx={{ fontWeight: "bold" }}>
-                                    Amount
-                                  </TableCell>
-                                </TableRow>
-                              </TableHead>
-                              <TableBody>
-                                {income.additional_income.map(
-                                  (additionalIncome) => (
-                                    <TableRow key={additionalIncome.id}>
-                                      <TableCell sx={{ fontWeight: "bold" }}>
-                                        {additionalIncome.description}
-                                      </TableCell>
-                                      <TableCell>
-                                        <NumericFormat
-                                          value={additionalIncome.amount || 0}
-                                          displayType="text"
-                                          thousandSeparator={true}
-                                          prefix="$"
-                                          decimalScale={2}
-                                          fixedDecimalScale={true}
-                                        />
-                                      </TableCell>
-                                    </TableRow>
-                                  )
-                                )}
-                              </TableBody>
-                            </Table>
-                          </Grid>
-                        </Grid>
+                        <AdditionalIncomeTable income={income.additional_income} />
                       </AccordionDetails>
                     </Accordion>
                   ) : (
                     <Box
                       sx={{
                         display: "flex",
-                        justifyContent: "flex-end"
+                        justifyContent: "flex-end",
                       }}
                     >
                       <Button

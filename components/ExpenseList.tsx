@@ -17,6 +17,7 @@ import {
 import moment from "moment";
 import React, { useMemo } from "react";
 import { NumericFormat } from "react-number-format";
+import ExpensesTable from "./Expenses/ExpensesTable";
 
 interface ExpenseListProps {
   expenses: Expense[] | undefined;
@@ -33,83 +34,7 @@ const ExpenseList: React.FC<ExpenseListProps> = ({ expenses }) => {
         <Typography variant="h6" color="primary">
           <CalendarMonth sx={{ pt: 1 }} /> {monthYear}
         </Typography>
-        <Table>
-          <TableHead>
-            <TableRow>
-              <TableCell sx={{ fontWeight: "bold" }}>Expense</TableCell>
-              <TableCell sx={{ fontWeight: "bold" }}>Amount</TableCell>
-              <TableCell sx={{ fontWeight: "bold" }}>Date Due</TableCell>
-              <TableCell sx={{ fontWeight: "bold" }}>Date Paid</TableCell>
-              <TableCell sx={{ fontWeight: "bold" }}>Autopay</TableCell>
-            </TableRow>
-          </TableHead>
-          <TableBody>
-            {groupedExpenses[monthYear].map((expense, expenseIndex) => (
-              <TableRow key={expenseIndex}>
-                <TableCell
-                  sx={{
-                    fontWeight: "bold",
-                    whiteSpace: "nowrap",
-                    overflow: "hidden",
-                    textOverflow: "ellipsis",
-                  }}
-                >
-                  {expense.expense_name}
-                </TableCell>
-                <TableCell>
-                  <NumericFormat
-                    value={expense.amount || 0}
-                    displayType="text"
-                    thousandSeparator={true}
-                    prefix="$"
-                    decimalScale={2}
-                    fixedDecimalScale={true}
-                  />
-                </TableCell>
-                <TableCell
-                  sx={{
-                    whiteSpace: "nowrap",
-                    overflow: "hidden",
-                    textOverflow: "ellipsis",
-                  }}
-                >
-                  {moment(expense.date_due).format("MMMM Do, YYYY")}
-                </TableCell>
-                <TableCell
-                  sx={{
-                    whiteSpace: "nowrap",
-                    overflow: "hidden",
-                    textOverflow: "ellipsis",
-                  }}
-                >
-                  {expense.date_paid ? (
-                    moment(expense.date_paid).format("MMMM Do, YYYY")
-                  ) : expense.date_due &&
-                    moment(expense.date_due).isBefore(moment(), "day") ? (
-                    <Chip
-                      icon={<Error />}
-                      label="Past due"
-                      color="error"
-                      variant="outlined"
-                      size="small"
-                    />
-                  ) : (
-                    <Chip
-                      icon={<Error />}
-                      label="Not paid"
-                      color="warning"
-                      variant="outlined"
-                      size="small"
-                    />
-                  )}
-                </TableCell>
-                <TableCell sx={{ textAlign: "center" }}>
-                  {expense.autopay ? <Check color="success" /> : ""}
-                </TableCell>
-              </TableRow>
-            ))}
-          </TableBody>
-        </Table>
+        <ExpensesTable expenses={groupedExpenses[monthYear]} />
       </CardContent>
     </Card>
   ));
