@@ -21,6 +21,8 @@ import IncomeVsExpensesChart from "./IncomeVsExpenseChart";
 import IncomeList from "./IncomeList";
 import ExpenseList from "./ExpenseList";
 import { SkeletonCard } from "./Loaders/SkeletonCard";
+import { Add } from "@mui/icons-material";
+import AddBudgetForm from "./Budget/AddBudgetDialog";
 
 const Dashboard: React.FC = () => {
   const [startDate, setStartDate] = useState<Moment | null>(null);
@@ -55,7 +57,7 @@ const Dashboard: React.FC = () => {
     isLoading: isLoadingIncome,
     isError: isErrorIncome,
     error: incomeError,
-    refetch: refetchIncome
+    refetch: refetchIncome,
   } = useQuery<Income[], Error>({
     queryKey: ["income", startDate, endDate],
     queryFn: () =>
@@ -71,6 +73,7 @@ const Dashboard: React.FC = () => {
     isLoading: isLoadingExpenses,
     isError: isErrorExpenses,
     error: expensesError,
+    refetch: refetchExpenses,
   } = useQuery<Expense[], Error>({
     queryKey: ["expenses", startDate, endDate],
     queryFn: () =>
@@ -156,9 +159,19 @@ const Dashboard: React.FC = () => {
                 </Box>
               </Grid>
               <Grid item xs={12} md={7}>
-                <Typography variant="h6" gutterBottom>
-                  Expenses
-                </Typography>
+                <Box
+                  display="flex"
+                  justifyContent="space-between"
+                  alignItems="center"
+                >
+                  <Typography variant="h6" gutterBottom>
+                    Expenses
+                  </Typography>
+                  <AddBudgetForm refetch={() => {
+                    refetchIncome();
+                    refetchExpenses();
+                  }} />
+                </Box>
                 {isErrorExpenses ? (
                   <Typography color="error">
                     {(expensesError as Error).message ||

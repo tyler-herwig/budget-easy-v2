@@ -51,3 +51,47 @@ export async function GET(request: Request) {
     return NextResponse.json({ error: 'Internal Server Error' }, { status: 500 })
   }
 }
+
+export async function POST(request: Request) {
+  try {
+    // Initialize Supabase client
+    const supabase = await createClient();
+
+    // Parse the request body
+    const { expenses } = await request.json();
+
+    // Get the authenticated user
+    const { data: { user } } = await supabase.auth.getUser();
+
+    // If no user is authenticated, return an error
+    if (!user) {
+      return NextResponse.json({ error: 'User not authenticated' }, { status: 401 });
+    }
+
+    const profileId = user.id;
+
+    // Map expenses to match the database structure
+    const expensesToInsert = expenses.map((expense: any) => ({
+      profile_id: profileId,
+      expense_name: expense.expense_name,
+      expense_description: expense.expense_description || null,
+      amount: expense.amount,
+      date_due: expense.formatted_date,
+      autopay: expense.autopay || false,
+      status: 'pending',
+    }));
+
+    // Insert the expenses
+    const { data, error } = await supabase
+      .from('expenses')
+      .insert(expensesToInsert);
+
+    if (error) {
+      return NextResponse.json({ error: error.message }, { status: 500 });
+    }
+
+    return NextResponse.json({ message: 'Expenses inserted successfully', data });
+  } catch (error) {
+    return NextResponse.json({ error: 'Internal Server Error' }, { status: 500 });
+  }
+}
