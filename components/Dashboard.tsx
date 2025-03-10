@@ -55,6 +55,7 @@ const Dashboard: React.FC = () => {
     isLoading: isLoadingIncome,
     isError: isErrorIncome,
     error: incomeError,
+    refetch: refetchIncome
   } = useQuery<Income[], Error>({
     queryKey: ["income", startDate, endDate],
     queryFn: () =>
@@ -150,7 +151,7 @@ const Dashboard: React.FC = () => {
                   ) : loading || isLoadingIncome ? (
                     <SkeletonCard count={5} width={634.75} height={154.77} />
                   ) : (
-                    <IncomeList incomes={incomes} />
+                    <IncomeList incomes={incomes} refetch={refetchIncome} />
                   )}
                 </Box>
               </Grid>

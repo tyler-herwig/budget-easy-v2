@@ -47,6 +47,7 @@ export async function GET(request: Request) {
       .from('additional_income')
       .select('*')
       .eq('profile_id', user.id)
+      .order('created_at', { ascending: true })
 
     if (additionalIncomeError) {
       return NextResponse.json({ error: additionalIncomeError.message }, { status: 500 })

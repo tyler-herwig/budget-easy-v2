@@ -12,30 +12,24 @@ import {
   Tooltip,
   LinearProgress,
   Button,
-  IconButton,
   Badge,
   Accordion,
   AccordionDetails,
   AccordionSummary,
-  Table,
-  TableCell,
-  TableHead,
-  TableRow,
-  TableBody,
-  Paper,
   useTheme,
 } from "@mui/material";
 import moment from "moment";
 import React from "react";
 import { NumericFormat } from "react-number-format";
 import AdditionalIncomeTable from "./Income/AdditionalIncomeTable";
+import AdditionalIncomeForm from "./Income/AdditionalIncomeForm";
 
 interface IncomeListProps {
   incomes: Income[] | undefined;
+  refetch: () => void;
 }
 
-const IncomeList: React.FC<IncomeListProps> = ({ incomes }) => {
-  const theme = useTheme();
+const IncomeList: React.FC<IncomeListProps> = ({ incomes, refetch }) => {
 
   return (
     <Grid container spacing={2} sx={{ mb: 3 }}>
@@ -230,41 +224,12 @@ const IncomeList: React.FC<IncomeListProps> = ({ incomes }) => {
                         </Badge>
                       </AccordionSummary>
                       <AccordionDetails>
-                        <Box
-                          sx={{
-                            display: "flex",
-                            justifyContent: "flex-end",
-                            mb: 2,
-                          }}
-                        >
-                          <Button
-                            variant="outlined"
-                            size="small"
-                            startIcon={<Add />}
-                            sx={{ borderRadius: "15px" }}
-                          >
-                            Additional Income
-                          </Button>
-                        </Box>
-                        <AdditionalIncomeTable income={income.additional_income} />
+                        <AdditionalIncomeForm income={income} refetch={refetch} />
+                        <AdditionalIncomeTable income={income.additional_income} refetch={refetch} />
                       </AccordionDetails>
                     </Accordion>
                   ) : (
-                    <Box
-                      sx={{
-                        display: "flex",
-                        justifyContent: "flex-end",
-                      }}
-                    >
-                      <Button
-                        variant="outlined"
-                        size="small"
-                        startIcon={<Add />}
-                        sx={{ borderRadius: "15px", mr: 1 }}
-                      >
-                        Additional Income
-                      </Button>
-                    </Box>
+                    <AdditionalIncomeForm income={income} refetch={refetch} />
                   )}
                 </Box>
               </CardContent>
