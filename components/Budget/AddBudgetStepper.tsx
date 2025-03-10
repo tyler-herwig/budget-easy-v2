@@ -151,7 +151,7 @@ const AddBudgetStepper: React.FC<AddBudgetStepperProps> = ({
 
   const handleBack = () => setActiveStep((prevStep) => prevStep - 1);
 
-  if (isLoading) return <LoadingSpinner />;
+  if (isLoading || loadingExpenses) return <LoadingSpinner />;
   if (isError) return <Typography>Error loading templates.</Typography>;
 
   const columns: GridColDef[] = [
