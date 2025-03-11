@@ -1,7 +1,7 @@
 import { createClient } from '@/utils/supabase/server'
 import { NextResponse } from 'next/server'
 
-export async function DELETE(request: Request, { params }: { params: { id: string } }) {
+export async function DELETE(request: Request, context: { params: { id: string } }) {
   try {
     // Initialize Supabase client
     const supabase = await createClient()
@@ -16,7 +16,7 @@ export async function DELETE(request: Request, { params }: { params: { id: strin
     }
 
     // Get the additional_income ID from the route parameters
-    const { id } = await params
+    const { id } = await context.params;
 
     if (!id) {
       return NextResponse.json({ error: 'Missing additional_income ID' }, { status: 400 })
@@ -54,7 +54,7 @@ export async function DELETE(request: Request, { params }: { params: { id: strin
   }
 }
 
-export async function PATCH(request: Request, { params }: { params: { id: string } }) {
+export async function PATCH(request: Request, context: { params: { id: string } }) {
   try {
     // Initialize Supabase client
     const supabase = await createClient()
@@ -69,7 +69,7 @@ export async function PATCH(request: Request, { params }: { params: { id: string
     }
 
     // Get the additional_income ID from the route parameters
-    const { id } = await params
+    const { id } = await context.params;
 
     if (!id) {
       return NextResponse.json({ error: 'Missing additional_income ID' }, { status: 400 })
