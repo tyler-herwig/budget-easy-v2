@@ -3,7 +3,7 @@ import { createClient } from '@/utils/supabase/server';
 
 export async function GET(req: NextRequest, { params }: { params: { id: string } }) {
     const supabase = await createClient();
-    const { id } = params;
+    const { id } = await params;
 
     if (!id) {
         return NextResponse.json({ error: 'Invalid user ID' }, { status: 400 });
