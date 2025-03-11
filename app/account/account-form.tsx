@@ -4,6 +4,7 @@ import { useEffect, useState } from 'react';
 import { Box, Button, Container, Paper, TextField, Typography } from '@mui/material';
 import { useProfile } from '@/context/ProfileContext';
 import { User } from '@supabase/supabase-js';
+import { Profile } from '@/types/profile';
 
 export default function AccountForm({ user }: { user: User | null }) {
   const { profile, loading, updateProfile } = useProfile();
@@ -23,7 +24,7 @@ export default function AccountForm({ user }: { user: User | null }) {
 
   const handleUpdateProfile = async () => {
     if (profile) {
-      const updatedProfile = { full_name: fullname, username, website, avatar_url };
+      const updatedProfile: Profile = { full_name: fullname, username, website, avatar_url };
       await updateProfile(updatedProfile);
     }
   };

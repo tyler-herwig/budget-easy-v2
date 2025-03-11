@@ -87,3 +87,36 @@ export async function GET(
 
   return NextResponse.json(responseData, { status: 200 });
 }
+
+export async function PUT(
+  request: Request,
+  { params }: { params: Promise<{ id: string }> }
+) {
+  const supabase = await createClient();
+  const id = (await params).id;
+  const body = await request.json();
+
+  if (!id || !body) {
+    return NextResponse.json({ error: "Invalid request" }, { status: 400 });
+  }
+
+  const { full_name, username, website, avatar_url } = body;
+
+  const { error } = await supabase.from("profiles").upsert({
+    id,
+    full_name,
+    username,
+    website,
+    avatar_url,
+    updated_at: new Date().toISOString(),
+  });
+
+  if (error) {
+    return NextResponse.json({ error: error.message }, { status: 500 });
+  }
+
+  return NextResponse.json(
+    { message: "Profile updated successfully" },
+    { status: 200 }
+  );
+}
