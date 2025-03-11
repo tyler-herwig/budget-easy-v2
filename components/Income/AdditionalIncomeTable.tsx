@@ -4,7 +4,7 @@ import {
   GridRowEditStopReasons,
   GridRowSelectionModel,
 } from "@mui/x-data-grid";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { NumericFormat } from "react-number-format";
 import { Button, CircularProgress, Stack } from "@mui/material";
 import { Delete } from "@mui/icons-material";
@@ -46,13 +46,19 @@ const AdditionalIncomeTable: React.FC<AdditionalIncomeTableProps> = ({
   income,
   refetch,
 }) => {
-  const rows = income.map((item, index) => ({ ...item, id: item.id || index }));
+  const [rows, setRows] = useState(
+    income.map((item, index) => ({ ...item, id: item.id || index }))
+  );
   const [selectedRows, setSelectedRows] = useState<GridRowSelectionModel>([]);
   const [isDeleting, setIsDeleting] = useState<boolean>(false);
   const [loading, setLoading] = useState<boolean>(false);
 
+  useEffect(() => {
+    setRows(income.map((item, index) => ({ ...item, id: item.id || index })));
+  }, [income]);
+
   const handleRowEdit = async (newRow: any) => {
-    setLoading(true); // Start loading state
+    setLoading(true);
     try {
       const response = await axios.patch(
         `/api/additional-income/${newRow.id}`,
@@ -60,6 +66,9 @@ const AdditionalIncomeTable: React.FC<AdditionalIncomeTableProps> = ({
       );
 
       if (response.status === 200) {
+        setRows((prevRows) =>
+          prevRows.map((row) => (row.id === newRow.id ? newRow : row))
+        );
         await refetch();
       } else {
         console.error("Failed to update row:", newRow);
@@ -80,6 +89,9 @@ const AdditionalIncomeTable: React.FC<AdditionalIncomeTableProps> = ({
         const rowId = selectedRows[0];
         const response = await axios.delete(`/api/additional-income/${rowId}`);
         if (response.status === 200) {
+          setRows((prevRows) =>
+            prevRows.filter((row) => !selectedRows.includes(row.id))
+          );
           await refetch();
         }
       } else if (selectedRows.length > 1) {
@@ -87,6 +99,9 @@ const AdditionalIncomeTable: React.FC<AdditionalIncomeTableProps> = ({
           data: selectedRows,
         });
         if (response.status === 200) {
+          setRows((prevRows) =>
+            prevRows.filter((row) => !selectedRows.includes(row.id))
+          );
           await refetch();
         }
       } else {
@@ -134,11 +149,13 @@ const AdditionalIncomeTable: React.FC<AdditionalIncomeTableProps> = ({
           onClick={handleDeleteSelected}
           disabled={selectedRows.length === 0 || isDeleting}
           sx={{ minWidth: "120px", borderRadius: "15px" }}
-          startIcon={isDeleting ? (
-            <CircularProgress size={24} color="inherit" sx={{mr: 1 }} />
-          ) : (
-            <Delete />
-          )}
+          startIcon={
+            isDeleting ? (
+              <CircularProgress size={24} color="inherit" sx={{ mr: 1 }} />
+            ) : (
+              <Delete />
+            )
+          }
         >
           {isDeleting ? "Deleting" : "Delete Selected"}
         </Button>

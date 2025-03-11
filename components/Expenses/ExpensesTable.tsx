@@ -1,11 +1,23 @@
-import { DataGrid, GridRowEditStopReasons, GridRowSelectionModel } from "@mui/x-data-grid";
-import React, { useState } from "react";
+import {
+  DataGrid,
+  GridRowEditStopReasons,
+  GridRowSelectionModel,
+} from "@mui/x-data-grid";
+import React, { useEffect, useState } from "react";
 import { NumericFormat } from "react-number-format";
-import { Button, Stack, Chip, TextField, MenuItem, Select } from "@mui/material";
+import {
+  Button,
+  Stack,
+  Chip,
+  MenuItem,
+  Select,
+  CircularProgress,
+} from "@mui/material";
 import { Delete, Check, Error } from "@mui/icons-material";
 import moment from "moment";
 import { Expense } from "@/types/expense";
 import { DatePicker } from "@mui/x-date-pickers";
+import axios from "axios";
 
 const columns = [
   {
@@ -41,12 +53,16 @@ const columns = [
     renderEditCell: (params: any) => (
       <DatePicker
         value={moment(params.value)}
-        onChange={(newValue) => params.api.setEditCellValue({ id: params.id, field: params.field, value: newValue })}
+        onChange={(newValue) =>
+          params.api.setEditCellValue({
+            id: params.id,
+            field: params.field,
+            value: newValue,
+          })
+        }
       />
     ),
-    renderCell: (params: any) => (
-      moment(params.value).format("MMMM Do, YYYY")
-    )
+    renderCell: (params: any) => moment(params.value).format("MMMM Do, YYYY"),
   },
   {
     field: "date_paid",
@@ -57,16 +73,35 @@ const columns = [
     renderEditCell: (params: any) => (
       <DatePicker
         value={moment(params.value)}
-        onChange={(newValue) => params.api.setEditCellValue({ id: params.id, field: params.field, value: newValue })}
+        onChange={(newValue) =>
+          params.api.setEditCellValue({
+            id: params.id,
+            field: params.field,
+            value: newValue,
+          })
+        }
       />
     ),
     renderCell: (params: any) =>
       params.value ? (
         moment(params.value).format("MMMM Do, YYYY")
-      ) : params.row.date_due && moment(params.row.date_due).isBefore(moment(), "day") ? (
-        <Chip icon={<Error />} label="Past due" color="error" variant="outlined" size="small" />
+      ) : params.row.date_due &&
+        moment(params.row.date_due).isBefore(moment(), "day") ? (
+        <Chip
+          icon={<Error />}
+          label="Past due"
+          color="error"
+          variant="outlined"
+          size="small"
+        />
       ) : (
-        <Chip icon={<Error />} label="Not paid" color="warning" variant="outlined" size="small" />
+        <Chip
+          icon={<Error />}
+          label="Not paid"
+          color="warning"
+          variant="outlined"
+          size="small"
+        />
       ),
   },
   {
@@ -77,34 +112,88 @@ const columns = [
     editable: true,
     renderEditCell: (params: any) => (
       <Select
-        value={params.value || "No"}
-        onChange={(event) => params.api.setEditCellValue({ id: params.id, field: params.field, value: event.target.value })}
+        value={params.value ? "Yes" : "No"}
+        onChange={(event) =>
+          params.api.setEditCellValue({
+            id: params.id,
+            field: params.field,
+            value: event.target.value === "Yes",
+          })
+        }
       >
         <MenuItem value="Yes">Yes</MenuItem>
         <MenuItem value="No">No</MenuItem>
       </Select>
     ),
-    renderCell: (params: any) => (params.value ? <Check color="success" /> : ""),
+    renderCell: (params: any) =>
+      params.value ? <Check color="success" /> : "",
   },
 ];
 
 interface ExpensesTableProps {
-    expenses: Expense[];
+  expenses: Expense[];
+  refetch: () => void;
 }
 
-const ExpensesTable: React.FC<ExpensesTableProps> = ({ expenses }) => {
-  const [rows, setRows] = useState(expenses.map((item, index) => ({ ...item, id: item.id || index })));
-  const [selectedRows, setSelectedRows] = useState<GridRowSelectionModel>([]);
+const ExpensesTable: React.FC<ExpensesTableProps> = ({ expenses, refetch }) => {
+  const [rows, setRows] = useState(
+    expenses.map((item, index) => ({ ...item, id: item.id || index }))
+  );
 
-  const handleRowEdit = (newRow: any) => {
-    setRows((prevRows) => prevRows.map((row) => (row.id === newRow.id ? newRow : row)));
-    console.log("Updated row:", newRow);
-    return newRow;
+  const [selectedRows, setSelectedRows] = useState<GridRowSelectionModel>([]);
+  const [isDeleting, setIsDeleting] = useState<boolean>(false);
+  const [loading, setLoading] = useState<boolean>(false);
+
+  useEffect(() => {
+    setRows(expenses.map((item, index) => ({ ...item, id: item.id || index })));
+  }, [expenses]);
+
+  const handleRowEdit = async (newRow: any) => {
+    setLoading(true);
+    try {
+      const response = await axios.patch(`/api/expenses/${newRow.id}`, newRow);
+
+      if (response.status === 200) {
+        setRows((prevRows) => prevRows.map((row) => (row.id === newRow.id ? newRow : row)));
+        await refetch();
+      } else {
+        console.error("Failed to update row:", newRow);
+      }
+
+      return newRow;
+    } catch (error) {
+      console.error("Error updating row:", error);
+    } finally {
+      setLoading(false);
+    }
   };
 
-  const handleDeleteSelected = () => {
-    setRows((prevRows) => prevRows.filter((row) => !selectedRows.includes(row.id)));
-    console.log("Deleted rows:", selectedRows);
+  const handleDeleteSelected = async () => {
+    setIsDeleting(true);
+    try {
+      if (selectedRows.length === 1) {
+        const rowId = selectedRows[0];
+        const response = await axios.delete(`/api/expenses/${rowId}`);
+        if (response.status === 200) {
+          setRows((prevRows) => prevRows.filter((row) => !selectedRows.includes(row.id)));
+          await refetch();
+        }
+      } else if (selectedRows.length > 1) {
+        const response = await axios.delete(`/api/expenses`, {
+          data: selectedRows,
+        });
+        if (response.status === 200) {
+          setRows((prevRows) => prevRows.filter((row) => !selectedRows.includes(row.id)));
+          await refetch();
+        }
+      } else {
+        console.log("No rows selected");
+      }
+    } catch (error) {
+      console.error("Error deleting rows:", error);
+    } finally {
+      setIsDeleting(false);
+    }
   };
 
   return (
@@ -132,6 +221,7 @@ const ExpensesTable: React.FC<ExpensesTableProps> = ({ expenses }) => {
         checkboxSelection
         disableRowSelectionOnClick
         sx={{ "& .bold-header": { fontWeight: "bold" }, borderRadius: "15px" }}
+        loading={loading}
       />
       <Stack spacing={1} direction="row">
         <Button
@@ -139,11 +229,17 @@ const ExpensesTable: React.FC<ExpensesTableProps> = ({ expenses }) => {
           size="small"
           color="error"
           onClick={handleDeleteSelected}
-          disabled={selectedRows.length === 0}
-          sx={{ minWidth: "120px", borderRadius: '15px' }}
-          startIcon={<Delete />}
+          disabled={selectedRows.length === 0 || isDeleting}
+          sx={{ minWidth: "120px", borderRadius: "15px" }}
+          startIcon={
+            isDeleting ? (
+              <CircularProgress size={24} color="inherit" sx={{ mr: 1 }} />
+            ) : (
+              <Delete />
+            )
+          }
         >
-          Delete Selected
+          {isDeleting ? "Deleting" : "Delete Selected"}
         </Button>
       </Stack>
     </Stack>

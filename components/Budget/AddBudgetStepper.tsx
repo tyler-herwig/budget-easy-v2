@@ -201,12 +201,27 @@ const AddBudgetStepper: React.FC<AddBudgetStepperProps> = ({
     },
     {
       field: "autopay",
-      headerName: "AutoPay",
-      type: "boolean",
-      flex: 1,
+      headerName: "Autopay",
+      flex: 0.5,
+      editable: true,
+      renderEditCell: (params: any) => (
+        <Select
+          value={params.value ? "Yes" : "No"}
+          onChange={(event) =>
+            params.api.setEditCellValue({
+              id: params.id,
+              field: params.field,
+              value: event.target.value === "Yes",
+            })
+          }
+        >
+          <MenuItem value="Yes">Yes</MenuItem>
+          <MenuItem value="No">No</MenuItem>
+        </Select>
+      ),
       renderCell: (params: any) =>
         params.value ? <Check color="success" /> : "",
-    },
+    }
   ];
 
   return (

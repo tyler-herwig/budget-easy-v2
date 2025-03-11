@@ -1,13 +1,7 @@
 "use client";
 
 import React, { useEffect, useState } from "react";
-import {
-  Grid,
-  Typography,
-  Box,
-  Alert,
-  AlertTitle,
-} from "@mui/material";
+import { Grid, Typography, Box, Alert, AlertTitle } from "@mui/material";
 import { AdapterMoment } from "@mui/x-date-pickers/AdapterMoment";
 import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
 import { DatePicker } from "@mui/x-date-pickers/DatePicker";
@@ -167,10 +161,12 @@ const Dashboard: React.FC = () => {
                   <Typography variant="h6" gutterBottom>
                     Expenses
                   </Typography>
-                  <AddBudgetForm refetch={() => {
-                    refetchIncome();
-                    refetchExpenses();
-                  }} />
+                  <AddBudgetForm
+                    refetch={() => {
+                      refetchIncome();
+                      refetchExpenses();
+                    }}
+                  />
                 </Box>
                 {isErrorExpenses ? (
                   <Typography color="error">
@@ -180,7 +176,13 @@ const Dashboard: React.FC = () => {
                 ) : loading || isLoadingExpenses ? (
                   <SkeletonCard count={1} width={898.25} height={1000} />
                 ) : (
-                  <ExpenseList expenses={expenses} />
+                  <ExpenseList
+                    expenses={expenses}
+                    refetch={() => {
+                      refetchIncome();
+                      refetchExpenses();
+                    }}
+                  />
                 )}
               </Grid>
             </Grid>

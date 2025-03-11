@@ -2,28 +2,17 @@
 
 import { Expense } from "@/types/expense";
 import { groupByMonthYear } from "@/utils/helpers/expense";
-import { CalendarMonth, Check, Error } from "@mui/icons-material";
-import {
-  Card,
-  CardContent,
-  Typography,
-  Table,
-  TableHead,
-  TableRow,
-  TableCell,
-  TableBody,
-  Chip,
-} from "@mui/material";
-import moment from "moment";
+import { CalendarMonth } from "@mui/icons-material";
+import { Card, CardContent, Typography } from "@mui/material";
 import React, { useMemo } from "react";
-import { NumericFormat } from "react-number-format";
 import ExpensesTable from "./Expenses/ExpensesTable";
 
 interface ExpenseListProps {
   expenses: Expense[] | undefined;
+  refetch: () => void;
 }
 
-const ExpenseList: React.FC<ExpenseListProps> = ({ expenses }) => {
+const ExpenseList: React.FC<ExpenseListProps> = ({ expenses, refetch }) => {
   const groupedExpenses = useMemo(() => {
     return expenses ? groupByMonthYear(expenses) : {};
   }, [expenses]);
@@ -34,7 +23,10 @@ const ExpenseList: React.FC<ExpenseListProps> = ({ expenses }) => {
         <Typography variant="h6" color="primary">
           <CalendarMonth sx={{ pt: 1 }} /> {monthYear}
         </Typography>
-        <ExpensesTable expenses={groupedExpenses[monthYear]} />
+        <ExpensesTable
+          expenses={groupedExpenses[monthYear]}
+          refetch={refetch}
+        />
       </CardContent>
     </Card>
   ));
