@@ -187,7 +187,8 @@ const AddBudgetStepper: React.FC<AddBudgetStepperProps> = ({
       flex: 1,
       editable: true,
       renderEditCell: (params: any) => {
-        const selectedMonth = moment(budgetData?.month);
+        const firstDayOfMonth = moment(budgetData?.month).startOf("month");
+        const lastDayOfMonth = moment(budgetData?.month).endOf("month");
 
         return (
           <DatePicker
@@ -201,7 +202,8 @@ const AddBudgetStepper: React.FC<AddBudgetStepperProps> = ({
                 });
               }
             }}
-            shouldDisableDate={(date) => !date.isSame(selectedMonth, "month")} // Disable dates outside selected month
+            minDate={firstDayOfMonth}
+            maxDate={lastDayOfMonth}
           />
         );
       },

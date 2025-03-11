@@ -17,19 +17,22 @@ const ExpenseList: React.FC<ExpenseListProps> = ({ expenses, refetch }) => {
     return expenses ? groupByMonthYear(expenses) : {};
   }, [expenses]);
 
-  return Object.keys(groupedExpenses).map((monthYear, index) => (
-    <Card key={index} sx={{ mb: 3, borderRadius: 5 }}>
-      <CardContent>
-        <Typography variant="h6" color="primary">
-          <CalendarMonth sx={{ pt: 1 }} /> {monthYear}
-        </Typography>
-        <ExpensesTable
-          expenses={groupedExpenses[monthYear]}
-          refetch={refetch}
-        />
-      </CardContent>
-    </Card>
-  ));
+  return Object.keys(groupedExpenses).map((monthYear, index) => {
+    return (
+      <Card key={index} sx={{ mb: 3, borderRadius: 5 }}>
+        <CardContent>
+          <Typography variant="h6" color="primary">
+            <CalendarMonth sx={{ pt: 1 }} /> {monthYear}
+          </Typography>
+          <ExpensesTable
+            expenses={groupedExpenses[monthYear]}
+            refetch={refetch}
+            monthYear={monthYear}
+          />
+        </CardContent>
+      </Card>
+    );
+  });
 };
 
 export default ExpenseList;

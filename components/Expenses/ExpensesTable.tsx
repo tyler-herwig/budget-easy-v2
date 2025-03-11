@@ -13,11 +13,12 @@ import {
   Select,
   CircularProgress,
 } from "@mui/material";
-import { Delete, Check, Error } from "@mui/icons-material";
+import { Delete, Check, Error, Add } from "@mui/icons-material";
 import moment from "moment";
 import { Expense } from "@/types/expense";
 import { DatePicker } from "@mui/x-date-pickers";
 import axios from "axios";
+import ExpenseForm from "./ExpenseForm";
 
 const columns = [
   {
@@ -133,9 +134,10 @@ const columns = [
 interface ExpensesTableProps {
   expenses: Expense[];
   refetch: () => void;
+  monthYear: string;
 }
 
-const ExpensesTable: React.FC<ExpensesTableProps> = ({ expenses, refetch }) => {
+const ExpensesTable: React.FC<ExpensesTableProps> = ({ expenses, refetch, monthYear }) => {
   const [rows, setRows] = useState(
     expenses.map((item, index) => ({ ...item, id: item.id || index }))
   );
@@ -224,6 +226,10 @@ const ExpensesTable: React.FC<ExpensesTableProps> = ({ expenses, refetch }) => {
         loading={loading}
       />
       <Stack spacing={1} direction="row">
+        <ExpenseForm
+          monthYear={monthYear}
+          refetch={refetch}
+        />
         <Button
           variant="outlined"
           size="small"
