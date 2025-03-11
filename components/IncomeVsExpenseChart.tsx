@@ -2,6 +2,7 @@ import React from "react";
 import { Line } from "react-chartjs-2";
 import {
   Chart as ChartJS,
+  ChartOptions,
   Title,
   Tooltip,
   Legend,
@@ -52,15 +53,15 @@ const IncomeVsExpensesChart: React.FC<IncomeVsExpenseChartProps> = ({
     ],
   };
 
-  const options = {
+  const options: ChartOptions<'line'> = {
     responsive: true,
     maintainAspectRatio: false,
     plugins: {
       tooltip: {
         enabled: true,
         callbacks: {
-          label: function (tooltipItem: any) {
-            const value = tooltipItem.raw;
+          label: function (tooltipItem) {
+            const value = Number(tooltipItem.raw);
             return "$" + value.toLocaleString();
           },
         },
@@ -84,7 +85,7 @@ const IncomeVsExpensesChart: React.FC<IncomeVsExpenseChartProps> = ({
         },
         beginAtZero: true,
         ticks: {
-          callback: function (value: any) {
+          callback: function (value) {
             return "$" + value.toLocaleString();
           },
         },
