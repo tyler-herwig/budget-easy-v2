@@ -21,6 +21,7 @@ const AddBudgetDialog: React.FC<AddBudgetDialogProps> = ({ refetch }) => {
 
   const handleClose = () => {
     setOpen(false);
+    setActiveStep(0);
   };
 
   return (

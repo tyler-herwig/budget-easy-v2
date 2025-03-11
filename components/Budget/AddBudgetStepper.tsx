@@ -19,7 +19,7 @@ import { useQuery } from "@tanstack/react-query";
 import { DataGrid, GridColDef } from "@mui/x-data-grid";
 import { LoadingSpinner } from "../LoadingSpinner";
 import { NumericFormat } from "react-number-format";
-import { Check } from "@mui/icons-material";
+import { Check, ChevronLeft, ChevronRight } from "@mui/icons-material";
 import axios from "axios";
 import { useSnackbar } from "@/hooks/useSnackbar";
 
@@ -256,14 +256,23 @@ const AddBudgetStepper: React.FC<AddBudgetStepperProps> = ({
             <Box sx={{ display: "flex", flexDirection: "row", pt: 2 }}>
               <Button
                 color="inherit"
+                variant="outlined"
+                sx={{ borderRadius: "25px", mr: 1 }}
                 disabled={activeStep === 0}
                 onClick={handleBack}
-                sx={{ mr: 1 }}
+                startIcon={<ChevronLeft />}
               >
                 Back
               </Button>
               <Box sx={{ flex: "1 1 auto" }} />
-              <Button type="submit" disabled={loadingExpenses || isSaving}>
+              <Button
+                type="submit"
+                variant="outlined"
+                sx={{ borderRadius: "25px" }}
+                color="success"
+                disabled={loadingExpenses || isSaving}
+                endIcon={<ChevronRight />}
+              >
                 {activeStep === steps.length - 1 ? (
                   isSaving ? (
                     <>
