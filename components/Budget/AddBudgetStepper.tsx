@@ -26,7 +26,7 @@ import { useSnackbar } from "@/hooks/useSnackbar";
 const steps = ["Select Template", "Refine Budget"];
 
 interface AddBudgetStepperProps {
-  refetch: () => void;
+  refetch: () => Promise<void>;
   handleClose: () => void;
   activeStep: number;
   setActiveStep: Dispatch<SetStateAction<number>>;

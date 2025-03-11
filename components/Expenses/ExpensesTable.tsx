@@ -133,7 +133,7 @@ const columns = [
 
 interface ExpensesTableProps {
   expenses: Expense[];
-  refetch: () => void;
+  refetch: () => Promise<void>;
   monthYear: string;
 }
 

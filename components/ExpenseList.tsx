@@ -9,7 +9,7 @@ import ExpensesTable from "./Expenses/ExpensesTable";
 
 interface ExpenseListProps {
   expenses: Expense[] | undefined;
-  refetch: () => void;
+  refetch: () => Promise<void>;
 }
 
 const ExpenseList: React.FC<ExpenseListProps> = ({ expenses, refetch }) => {

@@ -151,10 +151,17 @@ const Dashboard: React.FC = () => {
                   ) : loading || isLoadingIncome ? (
                     <SkeletonCard count={5} width={634.75} height={154.77} />
                   ) : (
-                    <IncomeList incomes={incomes} refetch={() => {
-                      refetchIncome();
-                      queryClient.invalidateQueries({ queryKey: ["profile", profile?.id] });
-                    }} />
+                    <IncomeList
+                      incomes={incomes}
+                      refetch={async () => {
+                        await Promise.all([
+                          refetchIncome(),
+                          queryClient.invalidateQueries({
+                            queryKey: ["profile", profile?.id],
+                          }),
+                        ]);
+                      }}
+                    />
                   )}
                 </Box>
               </Grid>
@@ -168,10 +175,14 @@ const Dashboard: React.FC = () => {
                     Expenses
                   </Typography>
                   <AddBudgetForm
-                    refetch={() => {
-                      refetchIncome();
-                      refetchExpenses();
-                      queryClient.invalidateQueries({ queryKey: ["profile", profile?.id] });
+                    refetch={async () => {
+                      await Promise.all([
+                        refetchIncome(),
+                        refetchExpenses(),
+                        queryClient.invalidateQueries({
+                          queryKey: ["profile", profile?.id],
+                        }),
+                      ]);
                     }}
                   />
                 </Box>
@@ -185,10 +196,14 @@ const Dashboard: React.FC = () => {
                 ) : (
                   <ExpenseList
                     expenses={expenses}
-                    refetch={() => {
-                      refetchIncome();
-                      refetchExpenses();
-                      queryClient.invalidateQueries({ queryKey: ["profile", profile?.id] });
+                    refetch={async () => {
+                      await Promise.all([
+                        refetchIncome(),
+                        refetchExpenses(),
+                        queryClient.invalidateQueries({
+                          queryKey: ["profile", profile?.id],
+                        }),
+                      ]);
                     }}
                   />
                 )}

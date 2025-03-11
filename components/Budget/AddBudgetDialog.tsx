@@ -8,7 +8,7 @@ import { Add } from "@mui/icons-material";
 import AddBudgetStepper from "./AddBudgetStepper";
 
 interface AddBudgetDialogProps {
-  refetch: () => void;
+  refetch: () => Promise<void>;
 }
 
 const AddBudgetDialog: React.FC<AddBudgetDialogProps> = ({ refetch }) => {

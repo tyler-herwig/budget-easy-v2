@@ -39,7 +39,7 @@ const columns = [
 
 interface AdditionalIncomeTableProps {
   income: AdditionalIncome[];
-  refetch: () => void;
+  refetch: () => Promise<void>;
 }
 
 const AdditionalIncomeTable: React.FC<AdditionalIncomeTableProps> = ({

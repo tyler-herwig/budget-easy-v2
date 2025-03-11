@@ -24,7 +24,7 @@ import AdditionalIncomeForm from "./Income/AdditionalIncomeForm";
 
 interface IncomeListProps {
   incomes: Income[] | undefined;
-  refetch: () => void;
+  refetch: () => Promise<void>;
 }
 
 const IncomeList: React.FC<IncomeListProps> = ({ incomes, refetch }) => {

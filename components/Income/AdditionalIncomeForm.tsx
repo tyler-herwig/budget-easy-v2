@@ -24,7 +24,7 @@ const validationSchema = Yup.object({
 
 interface AdditionalIncomeFormProps {
   income: Income;
-  refetch: () => void;
+  refetch: () => Promise<void>;
 }
 
 const AdditionalIncomeForm: React.FC<AdditionalIncomeFormProps> = ({
@@ -127,7 +127,8 @@ const AdditionalIncomeForm: React.FC<AdditionalIncomeFormProps> = ({
                   onBlur={handleBlur}
                   error={Boolean(touched.description && errors.description)}
                   helperText={touched.description && errors.description}
-                  variant="standard"
+                  variant="outlined"
+                  sx={{ mt: 2 }}
                 />
 
                 <TextField
@@ -142,7 +143,8 @@ const AdditionalIncomeForm: React.FC<AdditionalIncomeFormProps> = ({
                   onBlur={handleBlur}
                   error={Boolean(touched.amount && errors.amount)}
                   helperText={touched.amount && errors.amount}
-                  variant="standard"
+                  variant="outlined"
+                  sx={{ mt: 2 }}
                   InputProps={{
                     startAdornment: (
                       <InputAdornment position="start">$</InputAdornment>

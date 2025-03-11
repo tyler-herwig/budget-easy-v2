@@ -14,6 +14,8 @@ import {
   Select,
   InputLabel,
   FormControl,
+  FormControlLabel,
+  Switch,
 } from "@mui/material";
 import { Formik, Form } from "formik";
 import * as Yup from "yup";
@@ -33,7 +35,7 @@ const validationSchema = Yup.object({
 
 interface ExpenseFormProps {
   monthYear: string;
-  refetch: () => void;
+  refetch: () => Promise<void>;
 }
 
 const ExpenseForm: React.FC<ExpenseFormProps> = ({ monthYear, refetch }) => {
@@ -178,21 +180,23 @@ const ExpenseForm: React.FC<ExpenseFormProps> = ({ monthYear, refetch }) => {
                   sx={{ mb: 2 }}
                 />
 
-                <FormControl fullWidth margin="dense">
-                  <InputLabel>Autopay</InputLabel>
-                  <Select
-                    id="autopay"
-                    name="autopay"
-                    value={values.autopay.toString()}
-                    onChange={(event) =>
-                      setFieldValue("autopay", event.target.value === "true")
-                    }
-                    onBlur={handleBlur}
-                  >
-                    <MenuItem value="true">Yes</MenuItem>
-                    <MenuItem value="false">No</MenuItem>
-                  </Select>
-                </FormControl>
+                <FormControlLabel
+                  control={
+                    <Switch
+                      id="autopay"
+                      name="autopay"
+                      checked={values.autopay}
+                      onChange={(event) =>
+                        setFieldValue("autopay", event.target.checked)
+                      }
+                      onBlur={handleBlur}
+                      color="primary"
+                    />
+                  }
+                  label="Autopay enabled"
+                  labelPlacement="end" 
+                  sx={{ display: 'block'}}
+                />
               </DialogContent>
 
               <DialogActions>
