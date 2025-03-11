@@ -13,7 +13,7 @@ import {
   Select,
   CircularProgress,
 } from "@mui/material";
-import { Delete, Check, Error, Add } from "@mui/icons-material";
+import { Delete, Check, Error } from "@mui/icons-material";
 import moment from "moment";
 import { Expense } from "@/types/expense";
 import { DatePicker } from "@mui/x-date-pickers";

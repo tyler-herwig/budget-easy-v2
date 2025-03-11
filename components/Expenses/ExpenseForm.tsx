@@ -10,10 +10,6 @@ import {
   Box,
   CircularProgress,
   Typography,
-  MenuItem,
-  Select,
-  InputLabel,
-  FormControl,
   FormControlLabel,
   Switch,
 } from "@mui/material";
