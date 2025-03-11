@@ -1,8 +1,6 @@
 import { createClient } from "@/utils/supabase/server";
 import { NextResponse } from "next/server";
 
-type Params = Promise<{ id: string }>;
-
 export async function DELETE(
   request: Request,
   { params }: { params: Promise<{ id: string }> }
