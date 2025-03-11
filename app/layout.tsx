@@ -3,7 +3,7 @@ import { Inter } from 'next/font/google';
 import { ThemeProvider } from '@mui/material/styles';
 import { ReactNode } from 'react';
 import theme from './theme';
-import { ReactQueryClientProvider } from '@/components/ReactQueryClientProvider'
+import { AppProvider } from '@/components/AppProvider'
 import './globals.css';
 import { CssBaseline } from '@mui/material';
 
@@ -20,9 +20,9 @@ export default function RootLayout(props: RootLayoutProps) {
           <AppRouterCacheProvider>
             <ThemeProvider theme={theme}>
               <CssBaseline />
-              <ReactQueryClientProvider>
+              <AppProvider>
                 {props.children}
-              </ReactQueryClientProvider>
+              </AppProvider>
             </ThemeProvider>
           </AppRouterCacheProvider>
        </body>

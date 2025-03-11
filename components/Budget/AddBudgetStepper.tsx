@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { Dispatch, SetStateAction, useEffect, useState } from "react";
 import {
   Box,
   Button,
@@ -21,12 +21,15 @@ import { LoadingSpinner } from "../LoadingSpinner";
 import { NumericFormat } from "react-number-format";
 import { Check } from "@mui/icons-material";
 import axios from "axios";
+import { useSnackbar } from "@/hooks/useSnackbar";
 
 const steps = ["Select Template", "Refine Budget"];
 
 interface AddBudgetStepperProps {
   refetch: () => void;
   handleClose: () => void;
+  activeStep: number;
+  setActiveStep: Dispatch<SetStateAction<number>>;
 }
 
 // Fetch budget templates
@@ -46,12 +49,14 @@ const fetchTemplateExpenses = async (budgetTemplateId: number) => {
 const AddBudgetStepper: React.FC<AddBudgetStepperProps> = ({
   refetch,
   handleClose,
+  activeStep,
+  setActiveStep,
 }) => {
-  const [activeStep, setActiveStep] = useState(0);
   const [budgetData, setBudgetData] = useState<any>(null);
   const [budgetTemplateId, setBudgetTemplateId] = useState<number | null>(null);
   const [isSaving, setIsSaving] = useState<boolean>(false);
   const [adjustedExpenses, setAdjustedExpenses] = useState<any[]>([]);
+  const { showSnackbar } = useSnackbar();
 
   const {
     data: templates = [],
@@ -65,7 +70,7 @@ const AddBudgetStepper: React.FC<AddBudgetStepperProps> = ({
   const { data: expenses = [], isFetching: loadingExpenses } = useQuery({
     queryKey: ["templateExpenses", budgetTemplateId],
     queryFn: () => fetchTemplateExpenses(budgetTemplateId!),
-    enabled: !!budgetTemplateId
+    enabled: !!budgetTemplateId,
   });
 
   useEffect(() => {
@@ -109,7 +114,10 @@ const AddBudgetStepper: React.FC<AddBudgetStepperProps> = ({
 
         if (response.data.exists) {
           // If a budget already exists for the selected month and year, prevent moving forward
-          alert("A budget already exists for the selected month and year.");
+          showSnackbar(
+            "A budget already exists for the selected month and year.",
+            "warning"
+          );
           return;
         }
 
@@ -117,7 +125,7 @@ const AddBudgetStepper: React.FC<AddBudgetStepperProps> = ({
         setActiveStep(1);
       } catch (error) {
         console.error("Error validating budget:", error);
-        alert("Failed to validate the budget.");
+        showSnackbar("Failed to validate the budget.", "error");
       }
     } else {
       try {
@@ -138,11 +146,11 @@ const AddBudgetStepper: React.FC<AddBudgetStepperProps> = ({
           await refetch();
           handleClose();
         } else {
-          alert("Error adding expenses");
+          showSnackbar("Error adding expenses", "error");
         }
       } catch (error) {
         console.error("Error submitting expenses:", error);
-        alert("Failed to add expenses");
+        showSnackbar("Error adding expenses", "error");
       } finally {
         setIsSaving(false);
       }
@@ -221,7 +229,7 @@ const AddBudgetStepper: React.FC<AddBudgetStepperProps> = ({
       ),
       renderCell: (params: any) =>
         params.value ? <Check color="success" /> : "",
-    }
+    },
   ];
 
   return (
@@ -243,6 +251,37 @@ const AddBudgetStepper: React.FC<AddBudgetStepperProps> = ({
                 </Step>
               ))}
             </Stepper>
+
+            {/* Navigation Buttons */}
+            <Box sx={{ display: "flex", flexDirection: "row", pt: 2 }}>
+              <Button
+                color="inherit"
+                disabled={activeStep === 0}
+                onClick={handleBack}
+                sx={{ mr: 1 }}
+              >
+                Back
+              </Button>
+              <Box sx={{ flex: "1 1 auto" }} />
+              <Button type="submit" disabled={loadingExpenses || isSaving}>
+                {activeStep === steps.length - 1 ? (
+                  isSaving ? (
+                    <>
+                      <CircularProgress
+                        size={24}
+                        color="inherit"
+                        sx={{ mr: 1 }}
+                      />{" "}
+                      Generating Budget
+                    </>
+                  ) : (
+                    "Generate Budget"
+                  )
+                ) : (
+                  "Next"
+                )}
+              </Button>
+            </Box>
 
             {activeStep === 0 && (
               <Box
@@ -322,37 +361,6 @@ const AddBudgetStepper: React.FC<AddBudgetStepperProps> = ({
                 )}
               </Box>
             )}
-
-            {/* Navigation Buttons */}
-            <Box sx={{ display: "flex", flexDirection: "row", pt: 2 }}>
-              <Button
-                color="inherit"
-                disabled={activeStep === 0}
-                onClick={handleBack}
-                sx={{ mr: 1 }}
-              >
-                Back
-              </Button>
-              <Box sx={{ flex: "1 1 auto" }} />
-              <Button type="submit" disabled={loadingExpenses || isSaving}>
-                {activeStep === steps.length - 1 ? (
-                  isSaving ? (
-                    <>
-                      <CircularProgress
-                        size={24}
-                        color="inherit"
-                        sx={{ mr: 1 }}
-                      />{" "}
-                      Generating Budget
-                    </>
-                  ) : (
-                    "Generate Budget"
-                  )
-                ) : (
-                  "Next"
-                )}
-              </Button>
-            </Box>
           </Form>
         )}
       </Formik>

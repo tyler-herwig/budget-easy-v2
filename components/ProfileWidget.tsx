@@ -7,11 +7,8 @@ import {
   Avatar,
   Typography,
   Chip,
-  CircularProgress,
-  Skeleton,
 } from "@mui/material";
 import React from "react";
-import { LoadingSpinner } from "./LoadingSpinner";
 import { SkeletonProfileWidget } from "./Loaders/SkeletonProfileWidget";
 
 interface ProfileWidgetProps {
