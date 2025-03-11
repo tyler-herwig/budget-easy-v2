@@ -41,14 +41,14 @@ const IncomeVsExpensesChart: React.FC<IncomeVsExpenseChartProps> = ({
         data: incomes?.map((income) => income.amount),
         borderColor: "#66bb6a",
         backgroundColor: "#66bb6a",
-        tension: 0.4,
+        fill: false
       },
       {
         label: "Expenses",
-        data: incomes?.map((income) => income.total_expenses),
+        data: incomes?.map((income) => income.total_expenses ?? 0),
         borderColor: "#90caf9",
         backgroundColor: "#90caf9",
-        tension: 0.4,
+        fill: false
       },
     ],
   };
