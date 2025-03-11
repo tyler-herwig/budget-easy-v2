@@ -1,85 +1,77 @@
-'use client';
+"use client";
 
-import { createContext, useContext, useEffect, useState, useCallback } from 'react';
-import { createClient } from '@/utils/supabase/client';
-import { type User } from '@supabase/supabase-js';
-
-interface Profile { 
-    full_name: string | null; 
-    username: string | null; 
-    website: string | null; 
-    avatar_url: string | null; 
-}
+import { createContext, useContext } from "react";
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import axios from "axios";
+import { type User } from "@supabase/supabase-js";
+import { Profile } from "@/types/profile";
 
 interface ProfileContextType {
-    profile: Profile | null;
-    loading: boolean;
-    fetchProfile: () => Promise<void>;
-    updateProfile: (updatedProfile: Profile) => Promise<void>;
+  profile: Profile | undefined;
+  loading: boolean;
+  refetchProfile: () => void;
+  updateProfile: (updatedProfile: Profile) => Promise<void>;
 }
-  
+
 const ProfileContext = createContext<ProfileContextType | null>(null);
 
-export function ProfileProvider({ user, children }: { user: User | null; children: React.ReactNode }) {
-  const supabase = createClient();
-  const [profile, setProfile] = useState<Profile | null>(null);  
-  const [loading, setLoading] = useState(true);
+export function ProfileProvider({
+  user,
+  children,
+}: {
+  user: User | null;
+  children: React.ReactNode;
+}) {
+  const queryClient = useQueryClient();
 
-  const fetchProfile = useCallback(async () => {
-    if (!user) return;
+  const {
+    data: profile,
+    isLoading,
+    refetch,
+  } = useQuery<Profile>({
+    queryKey: ["profile", user?.id],
+    queryFn: async () => {
+      if (!user) throw new Error("User not found");
+      const { data } = await axios.get(`/api/profile/${user.id}`);
+      return data;
+    },
+    enabled: !!user, // Only run if user exists
+  });
 
-    try {
-      setLoading(true);
-      const { data, error } = await supabase
-        .from('profiles')
-        .select(`full_name, username, website, avatar_url`)
-        .eq('id', user.id)
-        .single();
-
-      if (error) throw error;
-      setProfile(data);
-    } catch (error) {
-      console.error('Error fetching profile:', error);
-    } finally {
-      setLoading(false);
-    }
-  }, [user, supabase]);
-
-  useEffect(() => {
-    fetchProfile();
-  }, [fetchProfile]);
-
-  const updateProfile = async (updatedProfile: Profile) => {
-    if (!user) return;
-    try {
-      setLoading(true);
-      const { error } = await supabase.from('profiles').upsert({
-        id: user.id,
-        ...updatedProfile,
-        updated_at: new Date().toISOString(),
-      });
-      if (error) throw error;
-      setProfile(updatedProfile);
-      alert('Profile updated!');
-    } catch (error) {
-      alert('Error updating profile!');
-    } finally {
-      setLoading(false);
-    }
-  };
+  const mutation = useMutation({
+    mutationFn: async (updatedProfile: Profile) => {
+      if (!user) throw new Error("User not found");
+      await axios.put(`/api/profile/${user.id}`, updatedProfile);
+    },
+    onSuccess: () => {
+      if (user?.id) {
+        queryClient.invalidateQueries({ queryKey: ["profile", user.id] });
+      }
+      alert("Profile updated!");
+    },
+    onError: () => {
+      alert("Error updating profile!");
+    },
+  });
 
   return (
-    <ProfileContext.Provider value={{ profile, loading, fetchProfile, updateProfile }}>
+    <ProfileContext.Provider
+      value={{
+        profile,
+        loading: isLoading,
+        refetchProfile: refetch,
+        updateProfile: mutation.mutateAsync,
+      }}
+    >
       {children}
     </ProfileContext.Provider>
   );
 }
 
 export function useProfile() {
-    const context = useContext(ProfileContext);
-    if (!context) {
-        throw new Error('useProfile must be used within a ProfileProvider');
-    }
-    return context;
+  const context = useContext(ProfileContext);
+  if (!context) {
+    throw new Error("useProfile must be used within a ProfileProvider");
+  }
+  return context;
 }
-  

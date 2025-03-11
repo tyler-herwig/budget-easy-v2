@@ -5,7 +5,7 @@ import { Grid, Typography, Box, Alert, AlertTitle } from "@mui/material";
 import { AdapterMoment } from "@mui/x-date-pickers/AdapterMoment";
 import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
 import { DatePicker } from "@mui/x-date-pickers/DatePicker";
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 import moment, { Moment } from "moment";
 import { Expense } from "@/types/expense";
 import { Income } from "@/types/income";
@@ -15,13 +15,16 @@ import IncomeVsExpensesChart from "./IncomeVsExpenseChart";
 import IncomeList from "./IncomeList";
 import ExpenseList from "./ExpenseList";
 import { SkeletonCard } from "./Loaders/SkeletonCard";
-import { Add } from "@mui/icons-material";
 import AddBudgetForm from "./Budget/AddBudgetDialog";
+import { useProfile } from "@/context/ProfileContext";
 
 const Dashboard: React.FC = () => {
   const [startDate, setStartDate] = useState<Moment | null>(null);
   const [endDate, setEndDate] = useState<Moment | null>(null);
   const [loading, setLoading] = useState<boolean>(true);
+
+  const { profile } = useProfile();
+  const queryClient = useQueryClient();
 
   useEffect(() => {
     if (typeof window !== "undefined") {
@@ -148,7 +151,10 @@ const Dashboard: React.FC = () => {
                   ) : loading || isLoadingIncome ? (
                     <SkeletonCard count={5} width={634.75} height={154.77} />
                   ) : (
-                    <IncomeList incomes={incomes} refetch={refetchIncome} />
+                    <IncomeList incomes={incomes} refetch={() => {
+                      refetchIncome();
+                      queryClient.invalidateQueries({ queryKey: ["profile", profile?.id] });
+                    }} />
                   )}
                 </Box>
               </Grid>
@@ -165,6 +171,7 @@ const Dashboard: React.FC = () => {
                     refetch={() => {
                       refetchIncome();
                       refetchExpenses();
+                      queryClient.invalidateQueries({ queryKey: ["profile", profile?.id] });
                     }}
                   />
                 </Box>
@@ -181,6 +188,7 @@ const Dashboard: React.FC = () => {
                     refetch={() => {
                       refetchIncome();
                       refetchExpenses();
+                      queryClient.invalidateQueries({ queryKey: ["profile", profile?.id] });
                     }}
                   />
                 )}
