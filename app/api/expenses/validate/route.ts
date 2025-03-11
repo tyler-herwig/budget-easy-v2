@@ -35,6 +35,7 @@ export async function POST(request: Request) {
     // If expenses exist for the given month and year, return exists = true
     return NextResponse.json({ exists: existingExpenses.length > 0 });
   } catch (error) {
+    console.error(error); 
     return NextResponse.json({ error: 'Internal Server Error' }, { status: 500 });
   }
 }

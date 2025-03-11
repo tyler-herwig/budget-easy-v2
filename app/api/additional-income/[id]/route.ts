@@ -49,6 +49,7 @@ export async function DELETE(request: Request, { params }: { params: { id: strin
 
     return NextResponse.json({ message: 'Record deleted successfully' })
   } catch (error) {
+    console.error(error); 
     return NextResponse.json({ error: 'Internal Server Error' }, { status: 500 })
   }
 }
@@ -114,6 +115,7 @@ export async function PATCH(request: Request, { params }: { params: { id: string
 
     return NextResponse.json({ message: 'Record updated successfully' })
   } catch (error) {
+    console.error(error); 
     return NextResponse.json({ error: 'Internal Server Error' }, { status: 500 })
   }
 }

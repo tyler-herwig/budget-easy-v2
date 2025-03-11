@@ -1,7 +1,7 @@
 "use client";
 
 import { Income } from "@/types/income";
-import { Add, ExpandMore, MonetizationOn } from "@mui/icons-material";
+import { ExpandMore, MonetizationOn } from "@mui/icons-material";
 import {
   Grid,
   Card,
@@ -11,12 +11,10 @@ import {
   Chip,
   Tooltip,
   LinearProgress,
-  Button,
   Badge,
   Accordion,
   AccordionDetails,
-  AccordionSummary,
-  useTheme,
+  AccordionSummary
 } from "@mui/material";
 import moment from "moment";
 import React from "react";

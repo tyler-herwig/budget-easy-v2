@@ -49,6 +49,7 @@ export async function DELETE(request: Request, { params }: { params: { id: strin
 
     return NextResponse.json({ message: 'Record deleted successfully' })
   } catch (error) {
+    console.error(error); 
     return NextResponse.json({ error: 'Internal Server Error' }, { status: 500 })
   }
 }
@@ -76,7 +77,7 @@ export async function PATCH(request: Request, { params }: { params: { id: string
   
       // Parse request body
       const requestBody = await request.json()
-      const { expense_name, expense_description, amount, date_due, date_paid, autopay } = requestBody
+      const { expense_name, amount, date_due, date_paid, autopay } = requestBody
   
       if (expense_name === undefined && date_due === undefined) {
         return NextResponse.json({ error: 'Missing required fields' }, { status: 400 })
@@ -119,6 +120,7 @@ export async function PATCH(request: Request, { params }: { params: { id: string
   
       return NextResponse.json({ message: 'Record updated successfully' })
     } catch (error) {
+      console.error(error); 
       return NextResponse.json({ error: 'Internal Server Error' }, { status: 500 })
     }
   }

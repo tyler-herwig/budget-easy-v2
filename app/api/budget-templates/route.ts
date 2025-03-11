@@ -1,7 +1,7 @@
 import { createClient } from '@/utils/supabase/server'
 import { NextResponse } from 'next/server'
 
-export async function GET(request: Request) {
+export async function GET() {
   try {
     // Initialize Supabase client
     const supabase = await createClient()
@@ -32,6 +32,7 @@ export async function GET(request: Request) {
     // Return the templates data
     return NextResponse.json(templates)
   } catch (error) {
+    console.error(error); 
     return NextResponse.json({ error: 'Internal Server Error' }, { status: 500 })
   }
 }

@@ -41,6 +41,7 @@ export async function GET(request: Request) {
     // Return the expenses data
     return NextResponse.json(expenses);
   } catch (error) {
+    console.error(error); 
     return NextResponse.json({ error: 'Internal Server Error' }, { status: 500 });
   }
 }

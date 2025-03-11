@@ -56,6 +56,7 @@ export async function GET(request: Request) {
     // Return the filtered expenses data
     return NextResponse.json(expenses);
   } catch (error) {
+    console.error(error); 
     return NextResponse.json(
       { error: "Internal Server Error" },
       { status: 500 }
@@ -111,6 +112,7 @@ export async function POST(request: Request) {
       data,
     });
   } catch (error) {
+    console.error(error); 
     return NextResponse.json(
       { error: "Internal Server Error" },
       { status: 500 }
@@ -184,6 +186,7 @@ export async function DELETE(request: Request) {
       message: `${idsToDelete.length} records deleted successfully`,
     });
   } catch (error) {
+    console.error(error); 
     return NextResponse.json(
       { error: "Internal Server Error" },
       { status: 500 }

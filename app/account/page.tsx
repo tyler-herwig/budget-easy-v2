@@ -17,7 +17,9 @@ export default async function Account() {
 
   return (
     <ProfileProvider user={user}>
-      <PageWrapper title="Profile" children={<AccountForm user={user} />} />
+      <PageWrapper title="Profile">
+        <AccountForm user={user} />
+      </PageWrapper>
     </ProfileProvider>
   );
 }

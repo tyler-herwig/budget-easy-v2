@@ -54,6 +54,7 @@ export async function DELETE(request: Request) {
   
       return NextResponse.json({ message: `${idsToDelete.length} records deleted successfully` })
     } catch (error) {
+      console.error(error);
       return NextResponse.json({ error: 'Internal Server Error' }, { status: 500 })
     }
   }
@@ -102,6 +103,7 @@ export async function DELETE(request: Request) {
       // Respond with the newly created record
       return NextResponse.json({ message: 'Income added successfully', income: data })
     } catch (error) {
+      console.error(error);
       return NextResponse.json({ error: 'Internal Server Error' }, { status: 500 })
     }
   }
